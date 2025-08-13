@@ -1,0 +1,25 @@
+name: Exibir Dados da Issue
+on:
+  issues:
+    types:
+      - opened
+      - edited
+jobs:
+  process_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Imprimir Dados da Issue
+        run: |
+
+          echo "Titulo: ${{ github.event.issue.title }}"     
+          echo "Labels: ${{ toJson(github.event.issue.labels) }}"
+          echo "Numero: ${{ github.event.issue.number }}"  
+          echo "Corpo: ${{ github.event.issue.body }}"
+
+      - name: Salvar Dados da Issue em Arquivo
+        run: |
+          echo "Salvando dados da issue em issue_data.txt"
+          echo "Titulo: ${{ github.event.issue.title }}" > issue_data.txt
+          echo "Labels: ${{ toJson(github.event.issue.labels) }}" >> issue_data.txt
+          echo "Numero: ${{ github.event.issue.number }}" >> issue_data.txt
+          echo "Corpo: ${{ github.event.issue.body }}" >> issue_data.txt
