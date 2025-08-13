@@ -1,25 +1,19 @@
-name: Exibir Dados da Issue
+name: Get Issue Body
 on:
   issues:
     types:
       - opened
       - edited
 jobs:
-  process_issue:
+  fetch_issue_body:
     runs-on: ubuntu-latest
     steps:
-      - name: Imprimir Dados da Issue
+      - name: Fetch issue body
         run: |
-
-          echo "Titulo: ${{ github.event.issue.title }}"     
-          echo "Labels: ${{ toJson(github.event.issue.labels) }}"
-          echo "Numero: ${{ github.event.issue.number }}"  
-          echo "Corpo: ${{ github.event.issue.body }}"
-
-      - name: Salvar Dados da Issue em Arquivo
-        run: |
-          echo "Salvando dados da issue em ./issue_data.txt"
-          echo "Titulo: ${{ github.event.issue.title }}" > ./issue_data.txt
-          echo "Labels: ${{ toJson(github.event.issue.labels) }}" >> ./issue_data.txt
-          echo "Numero: ${{ github.event.issue.number }}" >> ./issue_data.txt
-          echo "Corpo: ${{ github.event.issue.body }}" >> ./issue_data.txt
+          issue_body=$(gh api repos/$OWNER/$REPO/issues/$ISSUE_NUMBER --jq '.body')
+          echo "$issue_body" > issue_body.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
