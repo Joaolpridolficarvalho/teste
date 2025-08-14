@@ -24,10 +24,11 @@ jobs:
       - name: Exibir conteúdo
         run: cat issue_data.txt
       - name: Commitar e fazer push
-             git config user.name "GitHub Actions"
-          git config user.email "jlprcarvalho@gmail.com"
-          git add issue_data.txt
-          git commit -m "Adicionando novo arquivo"
-          git push
+        run: |
+              git config user.name "GitHub Actions"
+              git config user.email "jlprcarvalho@gmail.com"
+              git add issue_data.txt
+              git commit -m "Adicionando novo arquivo"
+              git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
