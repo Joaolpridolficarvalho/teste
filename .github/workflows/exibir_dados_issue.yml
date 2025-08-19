@@ -18,18 +18,21 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}   # garante que push é autorizado
 
-      - name: Criar arquivo com dados da issue
+      - name: Criar JSON com dados da issue
         run: |
           mkdir -p issues
-          FILE="issues/issue-${{ github.event.issue.number }}.txt"
+          FILE="issues/issue-${{ github.event.issue.number }}.json"
+          echo "FILE=$FILE" >> $GITHUB_ENV
 
-          echo "Título: ${{ github.event.issue.title }}" > $FILE
-          echo "" >> $FILE
-          echo "Corpo:" >> $FILE
-          echo "${{ github.event.issue.body }}" >> $FILE
-          echo "" >> $FILE
-          echo "Labels:" >> $FILE
-          echo "${{ toJson(github.event.issue.labels) }}" >> $FILE
+          cat <<EOF > "$FILE"
+          {
+            "number": "${{ github.event.issue.number }}",
+            "title": "${{ github.event.issue.title }}",
+            "body": "${{ github.event.issue.body }}",
+            "labels": ${{ toJson(github.event.issue.labels) }},
+            "user": "${{ github.event.issue.user.login }}"
+          }
+          EOF
 
       - name: Commitar em branch separada
         run: |
