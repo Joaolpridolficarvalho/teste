@@ -14,6 +14,7 @@ jobs:
         with:
           persist-credentials: true
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}   # garante que push é autorizado
 
       - name: Criar arquivo com dados da issue
         run: |
@@ -32,20 +33,15 @@ jobs:
         run: |
           BRANCH="issue-${{ github.event.issue.number }}"
 
-          # Atualizar main local
           git switch main
           git pull origin main
 
-          # Criar ou trocar para a branch
           git switch -C "$BRANCH"
 
-          # Configurar autor do commit
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Adicionar e commitar
           git add issues/issue-${{ github.event.issue.number }}.txt
           git commit -m "Adicionando dados da issue #${{ github.event.issue.number }}" || echo "Nada para commitar"
 
-          # Push da branch
           git push origin "$BRANCH" --force
