@@ -9,26 +9,43 @@ jobs:
   fetch_issue_data:
     runs-on: ubuntu-latest
     steps:
-      - name: Salvar dados da issue
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Criar arquivo com dados da issue
         run: |
-          echo "Título: ${{ github.event.issue.title }}" > issue_data.txt
-          echo "" >> issue_data.txt
-          echo "Corpo:" >> issue_data.txt
-          echo "${{ github.event.issue.body }}" >> issue_data.txt
-          echo "" >> issue_data.txt
-          echo "Labels:" >> issue_data.txt
-          for label in ${{ toJson(github.event.issue.labels) }}; do
-            echo "- $label" >> issue_data.txt
-          done
-          
-      - name: Exibir conteúdo
-        run: cat issue_data.txt
-      - name: Commitar e fazer push
+          mkdir -p issues
+          FILE="issues/issue-${{ github.event.issue.number }}.txt"
+
+          echo "Título: ${{ github.event.issue.title }}" > $FILE
+          echo "" >> $FILE
+          echo "Corpo:" >> $FILE
+          echo "${{ github.event.issue.body }}" >> $FILE
+          echo "" >> $FILE
+          echo "Labels:" >> $FILE
+          echo "${{ toJson(github.event.issue.labels) }}" >> $FILE
+
+      - name: Commitar em branch separada
         run: |
-              git config user.name "GitHub Actions"
-              git config user.email "jlprcarvalho@gmail.com"
-              git add issue_data.txt
-              git commit -m "Adicionando novo arquivo"
-              git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH="issue-${{ github.event.issue.number }}"
+
+          # Atualizar main local
+          git switch main
+          git pull origin main
+
+          # Criar ou trocar para a branch
+          git switch -C "$BRANCH"
+
+          # Configurar autor do commit
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Adicionar e commitar
+          git add issues/issue-${{ github.event.issue.number }}.txt
+          git commit -m "Adicionando dados da issue #${{ github.event.issue.number }}" || echo "Nada para commitar"
+
+          # Push da branch
+          git push origin "$BRANCH" --force
