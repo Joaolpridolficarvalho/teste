@@ -1,19 +1,37 @@
 import os
 import json
 import subprocess
+import re
 
 def normaliza_label(label):
     return label.strip().lower()
 
-def processa_issue(arquivo):
-    print(f"Processando issue do arquivo: {arquivo}")
-    with open(arquivo, 'r', encoding='utf-8') as f:
-        issue = json.load(f)[0]  # pega a única issue do arquivo
-    
-    nome_evento = issue.get('title', 'Evento sem título')
-    print(f"Processando issue: {issue['id']}")
-    labels = [normaliza_label(label['name'] if isinstance(label, dict) else label) for label in issue.get('labels', [])]
 
+def parse_issue(issue_json: dict) -> dict:
+    body = issue_json.get("body", "")
+
+    # Expressão regular para capturar blocos "### Campo\n\nvalor"
+    pattern = r"### (.*?)\n\n(.*?)(?=\n###|$)"
+    matches = re.findall(pattern, body, re.DOTALL)
+
+    parsed_fields = {}
+    for key, value in matches:
+        parsed_fields[key.strip()] = value.strip()
+
+    result = {
+        "number": issue_json.get("number"),
+        "title": issue_json.get("title"),
+        "user": issue_json.get("user"),
+        "labels": [label["name"] for label in issue_json.get("labels", [])],
+        "fields": parsed_fields
+    }
+    return result
+
+def processa_issue(arquivo: dict) -> None: 
+    print(f"Processando issue do arquivo: {arquivo}")
+    
+    nome_evento = arquivo.get('title', 'Evento sem título')
+    labels = arquivo.get('labels', [])
     base_dir = os.path.dirname(os.path.abspath(__file__))
     scripts = {
         'adicionar': os.path.join(base_dir, 'adicionar_evento.py'),

@@ -18,47 +18,22 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}   # garante que push é autorizado
 
-      - name: Criar JSON estruturado
+      - name: Criar JSON com dados da issue
         run: |
           mkdir -p issues
           FILE="issues/issue-${{ github.event.issue.number }}.json"
           echo "FILE=$FILE" >> $GITHUB_ENV
 
-          body="${{ github.event.issue.body }}"
-
-          # Extrair campos do body usando grep + sed
-          nome_evento=$(echo "$body" | sed -n '/### Nome do Evento/{n;p;}' | xargs)
-          formato=$(echo "$body" | sed -n '/### Formato do Evento/{n;p;}' | xargs)
-          url=$(echo "$body" | sed -n '/### URL do Evento/{n;p;}' | xargs)
-          ano=$(echo "$body" | sed -n '/### Ano do Evento/{n;p;}' | xargs)
-          mes=$(echo "$body" | sed -n '/### Mês do Evento/{n;p;}' | xargs)
-          dia=$(echo "$body" | sed -n '/### Dia do Evento/{n;p;}' | xargs)
-          inicio=$(echo "$body" | sed -n '/### Horário de Início/{n;p;}' | xargs)
-          termino=$(echo "$body" | sed -n '/### Horário de Término/{n;p;}' | xargs)
-          descricao=$(echo "$body" | sed -n '/### Descrição do Evento/{n;p;}' | xargs)
-          organizador=$(echo "$body" | sed -n '/### Nome do Organizador/{n;p;}' | xargs)
-          contato=$(echo "$body" | sed -n '/### Contato do Organizador/{n;p;}' | xargs)
-
-          # Montar JSON estruturado
           cat <<EOF > "$FILE"
           {
             "number": "${{ github.event.issue.number }}",
             "title": "${{ github.event.issue.title }}",
-            "nome_evento": "$nome_evento",
-            "formato": "$formato",
-            "url": "$url",
-            "ano": "$ano",
-            "mes": "$mes",
-            "dia": "$dia",
-            "horario_inicio": "$inicio",
-            "horario_termino": "$termino",
-            "descricao": "$descricao",
-            "organizador": "$organizador",
-            "contato": "$contato",
+            "body": "${{ github.event.issue.body }}",
             "labels": ${{ toJson(github.event.issue.labels) }},
             "user": "${{ github.event.issue.user.login }}"
           }
           EOF
+
       - name: Commitar em branch separada
         run: |
           BRANCH="issue-${{ github.event.issue.number }}"
