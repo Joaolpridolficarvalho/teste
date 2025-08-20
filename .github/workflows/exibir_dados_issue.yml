@@ -1,0 +1,53 @@
+name: Get Issue Data
+on:
+  issues:
+    types:
+      - opened
+      - edited
+
+jobs:
+  fetch_issue_data:
+    runs-on: ubuntu-latest 
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}   # garante que push é autorizado
+
+      - name: Criar JSON com dados da issue
+        run: |
+          mkdir -p issues
+          FILE="issues/issue-${{ github.event.issue.number }}.json"
+          echo "FILE=$FILE" >> $GITHUB_ENV
+
+          cat <<EOF > "$FILE"
+          {
+            "number": "${{ github.event.issue.number }}",
+            "title": "${{ github.event.issue.title }}",
+            "body": "${{ github.event.issue.body }}",
+            "labels": ${{ toJson(github.event.issue.labels) }},
+            "user": "${{ github.event.issue.user.login }}"
+          }
+          EOF
+
+      - name: Commitar em branch separada
+        run: |
+          BRANCH="issue-${{ github.event.issue.number }}"
+
+          git switch main
+          git pull origin main
+
+          git switch -C "$BRANCH"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add $FILE
+          git commit -m "Adicionando dados da issue #${{ github.event.issue.number }}" || echo "Nada para commitar"
+
+          git push origin "$BRANCH" --force
+
