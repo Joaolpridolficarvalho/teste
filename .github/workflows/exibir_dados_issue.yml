@@ -34,6 +34,13 @@ jobs:
           }
           EOF
 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Rodar o script de processamento
+        run: |
+          python script/processa_issue.py "$FILE"
       - name: Commitar em branch separada
         run: |
           BRANCH="issue-${{ github.event.issue.number }}"
