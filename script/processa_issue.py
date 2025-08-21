@@ -2,37 +2,53 @@ import os
 import json
 import subprocess
 import re
+from cProfile import label
 
 # def normaliza_label(label):
 #     return label.strip().lower()
 NOME_ARQUIVO = 'issue.json'
 
-def parse_issue(issue_json: dict) -> None:
-    body = issue_json.get("body", "")
 
-    # Expressão regular para capturar blocos "### Campo\n\nvalor"
-    pattern = r"### (.*?)\n\n(.*?)(?=\n###|$)"
-    matches = re.findall(pattern, body, re.DOTALL)
 
-    parsed_fields = {}
-    for key, value in matches:
-        parsed_fields[key.strip()] = value.strip()
-
-    result = {
-        "number": issue_json.get("number"),
-        "title": issue_json.get("title"),
-        "user": issue_json.get("user"),
-        "labels": [label["name"] for label in issue_json.get("labels", [])],
-        "fields": parsed_fields
-    }
-    json.dump(result, open('issue.json', 'w'), indent=4, ensure_ascii=False)
-
-def processa_issue(arquivo: str) -> None: 
-    print(f"Processando issue do arquivo: {arquivo}")
+def parse_issue(arquivo: str) -> dict:
     with open(arquivo, 'r', encoding='utf-8') as f:
-        issue = json.load(f)
-    nome_evento = issue.get('title', 'Evento sem título')
-    labels = issue.get('labels', [])
+        texto = f.read()
+
+    resultado = {}
+    # Captura título
+    titulo = re.search(r"Título:\s*(.*)", texto)
+    if titulo:
+        resultado["Título"] = titulo.group(1).strip()
+
+    # Captura e remove bloco Labels
+    labels = re.search(r"Labels:\s*(\[[\s\S]*])", texto)
+
+    if labels:
+        # Pega apenas o name
+        m_label_name = re.search(r"name:\s*([^\s,]+)", labels.group(1))
+        if m_label_name:
+            resultado["Label"] = m_label_name.group(1).strip()
+
+        # Remove o trecho de Labels do texto
+        texto = texto[:labels.start()]
+
+
+    # Captura os campos do corpo
+    padrao = re.compile(r"###\s*(.*?)\n\n(.*?)(?=\n###|\Z)", re.DOTALL)
+    matches = padrao.findall(texto)
+
+    for campo, valor in matches:
+        resultado[campo.strip()] = valor.strip()
+
+
+    base, _ = os.path.splitext(arquivo)
+    nome_saida = f"{base}.json"
+    with open(nome_saida, "w", encoding="utf-8") as f:
+        json.dump(resultado, f, ensure_ascii=False, indent=4)
+    return resultado
+def processa_issue(issue: dict) -> None:
+    labels = issue.get("Label", "")
+    titulo = issue.get("Título", "")
     base_dir = os.path.dirname(os.path.abspath(__file__))
     scripts = {
         'adicionar': os.path.join(base_dir, 'adicionar_evento.py'),
@@ -42,9 +58,7 @@ def processa_issue(arquivo: str) -> None:
 
     for label in labels:
         if label in scripts:
-            saida = ('A issue referente ao evento "{}" possui a label "{}".'.format(nome_evento, label)) | 'N/A'
-            with open('dados.txt', 'w', encoding='utf-8') as f:
-                f.write(saida)
+            print('A issue referente ao evento "{}" possui a label "{}".'.format(titulo, label))
             # subprocess.run(
             #     ["py", scripts[label], str(issue['id'])],
             #     check=True
@@ -56,4 +70,4 @@ def processa_issue(arquivo: str) -> None:
 if __name__ == "__main__":
     import sys
     arquivo = sys.argv[1]
-    processa_issue(arquivo)
+    parse_issue(arquivo)

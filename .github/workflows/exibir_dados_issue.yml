@@ -21,7 +21,7 @@ jobs:
       - name: Criar JSON com dados da issue
         run: |
           mkdir -p issues
-          FILE="issues/issue-${{ github.event.issue.number }}.json"
+          FILE="issues/issue.json"
           echo "FILE=$FILE" >> $GITHUB_ENV
 
           cat <<EOF > "$FILE"
