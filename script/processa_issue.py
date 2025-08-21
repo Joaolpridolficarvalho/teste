@@ -1,34 +1,25 @@
 import os
 import json
-import subprocess
 import re
+import subprocess
 
 NOME_ARQUIVO = "issue.json"
 
-def parse_issue(arquivo: str) -> dict:
+def parse_issue_github_generico(arquivo: str) -> dict:
+    """Lê uma issue do GitHub e extrai todos os campos automaticamente."""
     with open(arquivo, "r", encoding="utf-8") as f:
-        texto = f.read()
+        data = json.load(f)
 
-    resultado = {}
+    resultado = {
+        "Título": data.get("title", ""),
+        "Body": data.get("body", ""),
+        "Label": data["labels"][0]["name"] if data.get("labels") else ""
+    }
 
-    # Captura título
-    titulo = re.search(r"Título:\s*(.*)", texto)
-    if titulo:
-        resultado["Título"] = titulo.group(1).strip()
-
-    # Captura e remove bloco Labels
-    labels = re.search(r"Labels:\s*(\[[\s\S]*])", texto)
-    if labels:
-        m_label_name = re.search(r"name:\s*([^\s,]+)", labels.group(1))
-        if m_label_name:
-            resultado["Label"] = m_label_name.group(1).strip()
-        texto = texto[:labels.start()]
-
-    # Captura campos do corpo (### Campo)
-    padrao = re.compile(r"###\s*(.*?)\n\n(.*?)(?=\n###|\Z)", re.DOTALL)
-    matches = padrao.findall(texto)
-
-    for campo, valor in matches:
+    # Regex para capturar todos os campos do tipo **Campo**: valor
+    padrao_campo = re.compile(r"\*\*(.*?)\*\*:\s*(.*)")
+    for match in padrao_campo.findall(resultado["Body"]):
+        campo, valor = match
         resultado[campo.strip()] = valor.strip()
 
     # Salva no JSON fixo
@@ -50,14 +41,18 @@ def processa_issue(issue: dict) -> None:
     }
 
     if label in scripts:
-        print(f'A issue referente ao evento "{titulo}" possui a label "{label}".')
-        # subprocess.run(["py", scripts[label], str(issue.get("id", ""))], check=True)
+        print(f'A issue "{titulo}" possui a label "{label}".')
+        # subprocess.run(["py", scripts[label], str(issue.get("number", ""))], check=True)
     else:
         print("Nenhum script correspondente à label encontrada.")
 
 
 if __name__ == "__main__":
     import sys
+    if len(sys.argv) < 2:
+        print("Uso: python main.py <arquivo_issue_json>")
+        exit(1)
+
     arquivo = sys.argv[1]
-    issue = parse_issue(arquivo)
+    issue = parse_issue_github_generico(arquivo)
     processa_issue(issue)
