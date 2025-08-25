@@ -1,3 +1,4 @@
 /.idea/
 /.github/.idea/
 
+/script/__pycache__/

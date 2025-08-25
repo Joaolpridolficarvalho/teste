@@ -38,11 +38,14 @@ def parse_issue(nome_arquivo : str) -> dict:
     with open(nome_arquivo, "w", encoding="utf-8") as f:
         json.dump(resultado, f, indent=2, ensure_ascii=False)
     
+    labels_permitidos = ['adicionar', 'remover', 'atualizar']
     # exibir dados extraídos
     with  open('dados_extraidos.txt', 'w', encoding='utf-8') as f:
         for chave, valor in resultado.items():
-            if chave == 'title' or chave == 'label':
-                f.write(f"{chave.capitalize()}: {valor}\n")
+            if chave == 'label' and valor in labels_permitidos:
+                f.write(f"{chave}: {valor}\n")
+            if chave == 'title':
+                f.write(f"{chave}: {valor}\n")
 
 # Exemplo de uso
 if __name__ == "__main__":
