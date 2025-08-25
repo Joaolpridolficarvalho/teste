@@ -8,7 +8,7 @@ def parse_issue(nome_arquivo : str) -> dict:
     com os campos do body estruturados + label principal.
     """
     with open(nome_arquivo, "r", encoding="utf-8") as f:
-        issue = f.read()
+        issue = json.load(f)
     # pega só o nome do primeiro label (se existir)
     labels = [label["name"] for label in issue.get("labels", [])]
     label = labels[0] if labels else ""

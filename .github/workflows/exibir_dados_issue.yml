@@ -19,20 +19,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}   # garante que push é autorizado
 
       - name: Criar JSON com dados da issue
+
         run: |
           mkdir -p issues
           FILE="issues/issue.json"
           echo "FILE=$FILE" >> $GITHUB_ENV
-
-          cat <<EOF > "$FILE"
-          {
-            "number": "${{ github.event.issue.number }}",
-            "title": "${{ github.event.issue.title }}",
-            "body": "${{ github.event.issue.body }}",
-            "labels": ${{ toJson(github.event.issue.labels) }},
-            "user": "${{ github.event.issue.user.login }}"
-          }
-          EOF
+          gh issue view $ISSUE_NUMBER --json title,body,labels,assignees,createdAt,updatedAt > issue_data.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
 
       - name: Setup Python
         uses: actions/setup-python@v4
