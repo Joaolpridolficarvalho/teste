@@ -37,7 +37,12 @@ def parse_issue(nome_arquivo : str) -> dict:
     print(resultado)
     with open(nome_arquivo, "w", encoding="utf-8") as f:
         json.dump(resultado, f, indent=2, ensure_ascii=False)
-
+    
+    # exibir dados extraídos
+    with  open('dados_extraidos.txt', 'w', encoding='utf-8') as f:
+        for chave, valor in resultado.items():
+            if chave == 'title' or chave == 'label':
+                f.write(f"{chave.capitalize()}: {valor}\n")
 
 # Exemplo de uso
 if __name__ == "__main__":
