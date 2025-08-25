@@ -19,28 +19,32 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install GitHub CLI
+        run: sudo apt-get update && sudo apt-get install -y gh
+
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
       - name: Create JSON with issue data
         run: |
           mkdir -p issues
-          FILE="issues/issue.json"
+          FILE="issues/issue-${{ github.event.issue.number }}.json"
           echo "FILE=$FILE" >> $GITHUB_ENV
-          gh issue view $ISSUE_NUMBER --json title,body,labels,assignees,createdAt,updatedAt > issue_data.json
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          gh issue view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --json number,title,body,labels,assignees,createdAt,updatedAt > "$FILE"
 
       - name: Display issue data
-        run: |
-          cat issue_data.json
+        run: cat "$FILE"
 
       - name: Commit to separate branch
         run: |
           BRANCH="issue-${{ github.event.issue.number }}"
-          git switch main
+          git switch main || git switch -c main
           git pull origin main
           git switch -C "$BRANCH"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add $FILE
+          git add "$FILE"
           git commit -m "Adding issue data #${{ github.event.issue.number }}" || echo "Nothing to commit"
           git push origin "$BRANCH" --force
