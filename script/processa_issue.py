@@ -5,27 +5,45 @@ import subprocess
 import sys
 
 NOME_ARQUIVO = "issue.json"
+import os
+import json
+import re
+
 def parse_issue_github_generico(arquivo: str) -> dict:
-    """Lê uma issue do GitHub e retorna todos os campos estruturados em JSON."""
+    """Lê uma issue do GitHub (JSON ou texto cru do body) e extrai campos estruturados."""
+
     with open(arquivo, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        conteudo = f.read()
+
+    # Tenta interpretar como JSON completo
+    try:
+        data = json.loads(conteudo)
+    except json.JSONDecodeError:
+        # Se não for JSON, trata como body cru
+        data = {
+            "number": "",
+            "title": "",
+            "user": "",
+            "labels": [],
+            "body": conteudo
+        }
 
     resultado = {
         "number": str(data.get("number", "")),
         "title": data.get("title", ""),
         "author": data.get("user", ""),
-        "labels": [label["name"] for label in data.get("labels", [])]
+        "labels": [label["name"] for label in data.get("labels", [])],
     }
 
     body = data.get("body", "")
 
-    # Captura campos no formato ### Campo \n valor
-    padrao_markdown = re.compile(r"###\s*(.*?)\n(.*?)(?=\n###|\Z)", re.DOTALL)
+    # Extrair seções no formato ### Campo \n valor
+    padrao_markdown = re.compile(r"###\s*(.*?)\n+([^#]+)", re.DOTALL)
     for campo, valor in padrao_markdown.findall(body):
         chave = campo.strip().lower().replace(" ", "_")
         resultado[chave] = valor.strip()
 
-    # Captura campos no formato **Campo**: valor
+    # Também extrair se tiver campos no formato **Campo**: valor
     padrao_negrito = re.compile(r"\*\*(.*?)\*\*:\s*(.*)")
     for campo, valor in padrao_negrito.findall(body):
         chave = campo.strip().lower().replace(" ", "_")
