@@ -1,0 +1,18 @@
+{
+  "title": "atualizar evento",
+  "label": "atualizar",
+  "labels": [
+    "atualizar"
+  ],
+  "nome_do_evento": "React Conf Brasil 2025",
+  "formato_do_evento": "Híbrido",
+  "url_do_evento_(caso_remoto_ou_híbrido)": "https://reactconfbr.com.br/streaming",
+  "ano_do_evento": "2025",
+  "mês_do_evento": "Setembro",
+  "dia_do_evento": "25",
+  "horário_de_início": "09:00",
+  "horário_de_término": "17:30",
+  "descrição_do_evento": "ATUALIZAÇÃO: O evento foi convertido para formato híbrido devido à alta demanda. Agora oferecemos participação presencial em São Paulo e streaming ao vivo para todo o Brasil. Novas palestras sobre React 19, Next.js 15 e Server Components foram adicionadas à programação.",
+  "nome_do_organizador": "React Brasil Community",
+  "contato_do_organizador": "organizacao@reactconfbr.com.br"
+}
