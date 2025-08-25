@@ -36,6 +36,15 @@ jobs:
 
       - name: Display issue data
         run: cat "$FILE"
+      
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Rodar o script de processamento
+        run: |
+          python script/processa_issue.py "$FILE"
 
       - name: Commit to separate branch
         run: |
