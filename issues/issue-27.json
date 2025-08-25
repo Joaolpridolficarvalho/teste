@@ -1,0 +1,18 @@
+{
+  "title": "adicionar evento",
+  "label": "adicionar",
+  "labels": [
+    "adicionar"
+  ],
+  "nome_do_evento": "Python Brasil 2025",
+  "formato_do_evento": "Presencial",
+  "url_do_evento_(caso_remoto_ou_híbrido)": "https://pythonbrasil.org.br",
+  "ano_do_evento": "2025",
+  "mês_do_evento": "Outubro",
+  "dia_do_evento": "18",
+  "horário_de_início": "08:30",
+  "horário_de_término": "18:30",
+  "descrição_do_evento": "Maior conferência Python do Brasil, reunindo desenvolvedores, cientistas de dados e entusiastas da linguagem. O evento contará com palestras, workshops, sprints e networking sobre desenvolvimento web, ciência de dados, machine learning e muito mais.",
+  "nome_do_organizador": "Associação Python Brasil",
+  "contato_do_organizador": "contato@pythonbrasil.org.br"
+}
