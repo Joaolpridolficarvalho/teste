@@ -42,4 +42,5 @@ def parse_issue(nome_arquivo : str) -> dict:
 # Exemplo de uso
 if __name__ == "__main__":
     arquivo = sys.argv[1] 
+    print("ok")
     parse_issue(arquivo)
