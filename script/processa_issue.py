@@ -1,42 +1,37 @@
 import os
 import json
-import subprocess
 import re
+import subprocess
+import sys
 
 NOME_ARQUIVO = "issue.json"
-
-def parse_issue(arquivo: str) -> dict:
+def parse_issue_github_generico(arquivo: str) -> dict:
+    """Lê uma issue do GitHub e retorna todos os campos estruturados em JSON."""
     with open(arquivo, "r", encoding="utf-8") as f:
-        texto = f.read()
+        data = json.load(f)
 
-    resultado = {}
+    resultado = {
+        "number": str(data.get("number", "")),
+        "title": data.get("title", ""),
+        "author": data.get("user", ""),
+        "labels": [label["name"] for label in data.get("labels", [])]
+    }
 
-    # Captura título
-    titulo = re.search(r"Título:\s*(.*)", texto)
-    if titulo:
-        resultado["Título"] = titulo.group(1).strip()
+    body = data.get("body", "")
 
-    # Captura e remove bloco Labels
-    labels = re.search(r"Labels:\s*(\[[\s\S]*])", texto)
-    if labels:
-        m_label_name = re.search(r"name:\s*([^\s,]+)", labels.group(1))
-        if m_label_name:
-            resultado["Label"] = m_label_name.group(1).strip()
-        texto = texto[:labels.start()]
+    # Captura campos no formato ### Campo \n valor
+    padrao_markdown = re.compile(r"###\s*(.*?)\n(.*?)(?=\n###|\Z)", re.DOTALL)
+    for campo, valor in padrao_markdown.findall(body):
+        chave = campo.strip().lower().replace(" ", "_")
+        resultado[chave] = valor.strip()
 
-    # Captura campos do corpo (### Campo)
-    padrao = re.compile(r"###\s*(.*?)\n\n(.*?)(?=\n###|\Z)", re.DOTALL)
-    matches = padrao.findall(texto)
-
-    for campo, valor in matches:
-        resultado[campo.strip()] = valor.strip()
-
-    # Salva no JSON fixo
-    with open(NOME_ARQUIVO, "w", encoding="utf-8") as f:
-        json.dump(resultado, f, ensure_ascii=False, indent=4)
+    # Captura campos no formato **Campo**: valor
+    padrao_negrito = re.compile(r"\*\*(.*?)\*\*:\s*(.*)")
+    for campo, valor in padrao_negrito.findall(body):
+        chave = campo.strip().lower().replace(" ", "_")
+        resultado[chave] = valor.strip()
 
     return resultado
-
 
 def processa_issue(issue: dict) -> None:
     label = issue.get("Label", "")
@@ -50,14 +45,17 @@ def processa_issue(issue: dict) -> None:
     }
 
     if label in scripts:
-        print(f'A issue referente ao evento "{titulo}" possui a label "{label}".')
-        # subprocess.run(["py", scripts[label], str(issue.get("id", ""))], check=True)
+        print(f'A issue "{titulo}" possui a label "{label}".')
+        # subprocess.run([sys.executable, scripts[label], issue.get("Número", "")], check=True)
     else:
         print("Nenhum script correspondente à label encontrada.")
 
 
 if __name__ == "__main__":
-    import sys
+    if len(sys.argv) < 2:
+        print("Uso: python main.py <arquivo_issue_json>")
+        exit(1)
+
     arquivo = sys.argv[1]
-    issue = parse_issue(arquivo)
+    issue = parse_issue_github_generico(arquivo)
     processa_issue(issue)
