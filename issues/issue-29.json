@@ -1,0 +1,10 @@
+{
+  "title": "remover evento",
+  "label": "remover",
+  "labels": [
+    "remover"
+  ],
+  "nome_do_evento": "DevOps Summit Rio 2025",
+  "motivo_da_remoção": "O evento foi cancelado pelos organizadores devido a conflitos de agenda com outros grandes eventos de tecnologia na mesma data e baixa adesão de patrocinadores. A decisão foi tomada para garantir a qualidade do evento em uma nova data em 2026.",
+  "seu_contato": "carlos.santos@devopsrio.com.br"
+}
