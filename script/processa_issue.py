@@ -1,49 +1,35 @@
-import os
-import json
 import re
-import subprocess
-import sys
+import json
 
 NOME_ARQUIVO = "issue.json"
-import os
-import json
-import re
-
-def parse_issue_github_generico(arquivo: str) -> dict:
-    """Lê uma issue do GitHub (JSON ou texto cru do body) e extrai campos estruturados."""
-
-    with open(arquivo, "r", encoding="utf-8") as f:
-        conteudo = f.read()
-
-    # Tenta interpretar como JSON completo
-    try:
-        data = json.loads(conteudo)
-    except json.JSONDecodeError:
-        # Se não for JSON, trata como body cru
-        data = {
-            "number": "",
-            "title": "",
-            "user": "",
-            "labels": [],
-            "body": conteudo
-        }
+def parse_issue() -> dict:
+    """
+    Recebe um JSON de issue do GitHub (dict) e retorna outro JSON (dict)
+    com os campos do body estruturados + label principal.
+    """
+    with open(NOME_ARQUIVO, "r", encoding="utf-8") as f:
+        issue = f.read()
+    # pega só o nome do primeiro label (se existir)
+    labels = [label["name"] for label in issue.get("labels", [])]
+    label = labels[0] if labels else ""
 
     resultado = {
-        "number": str(data.get("number", "")),
-        "title": data.get("title", ""),
-        "author": data.get("user", ""),
-        "labels": [label["name"] for label in data.get("labels", [])],
+        "number": str(issue.get("number", "")),
+        "title": issue.get("title", ""),
+        "author": issue.get("user", ""),
+        "label": label,
+        "labels": labels,
     }
 
-    body = data.get("body", "")
+    body = issue.get("body", "")
 
-    # Extrair seções no formato ### Campo \n valor
+    # Extrair blocos do tipo ### Campo \n valor
     padrao_markdown = re.compile(r"###\s*(.*?)\n+([^#]+)", re.DOTALL)
     for campo, valor in padrao_markdown.findall(body):
         chave = campo.strip().lower().replace(" ", "_")
         resultado[chave] = valor.strip()
 
-    # Também extrair se tiver campos no formato **Campo**: valor
+    # Extrair blocos do tipo **Campo**: valor
     padrao_negrito = re.compile(r"\*\*(.*?)\*\*:\s*(.*)")
     for campo, valor in padrao_negrito.findall(body):
         chave = campo.strip().lower().replace(" ", "_")
@@ -51,29 +37,35 @@ def parse_issue_github_generico(arquivo: str) -> dict:
 
     return resultado
 
-def processa_issue(issue: dict) -> None:
-    label = issue.get("Label", "")
-    titulo = issue.get("Título", "")
-    base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    scripts = {
-        "adicionar": os.path.join(base_dir, "adicionar_evento.py"),
-        "atualizar": os.path.join(base_dir, "atualizar_evento.py"),
-        "remover": os.path.join(base_dir, "excluir_evento.py")
+# Exemplo de uso
+if __name__ == "__main__":
+    issue = {
+        "number": "7",
+        "title": "adicionar evento",
+        "body": """### Nome do Evento
+
+teste 333333333
+
+### Formato do Evento
+
+Remoto
+
+### Ano do Evento
+
+2025
+### Descrição
+teste 3333333
+### data do evento
+2025-12-31
+### Link do Evento
+https://www.teste.com
+""",
+        "labels": [
+            {"name": "adicionar"}
+        ],
+        "user": "Joaolpridolficarvalho"
     }
 
-    if label in scripts:
-        print(f'A issue "{titulo}" possui a label "{label}".')
-        # subprocess.run([sys.executable, scripts[label], issue.get("Número", "")], check=True)
-    else:
-        print("Nenhum script correspondente à label encontrada.")
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Uso: python main.py <arquivo_issue_json>")
-        exit(1)
-
-    arquivo = sys.argv[1]
-    issue = parse_issue_github_generico(arquivo)
-    processa_issue(issue)
+    parsed = parse_issue(issue)
+    print(json.dumps(parsed, indent=2, ensure_ascii=False))
