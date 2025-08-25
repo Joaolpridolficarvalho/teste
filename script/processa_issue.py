@@ -26,7 +26,7 @@ def parse_issue(nome_arquivo : str) -> dict:
     padrao_markdown = re.compile(r"###\s*(.*?)\n+([^#]+)", re.DOTALL)
     for campo, valor in padrao_markdown.findall(body):
         chave = campo.strip().lower().replace(" ", "_")
-        resultado.append({chave: valor.strip()})
+        resultado[chave] = valor.strip()
 
     # Extrair blocos do tipo **Campo**: valor
     padrao_negrito = re.compile(r"\*\*(.*?)\*\*:\s*(.*)")
