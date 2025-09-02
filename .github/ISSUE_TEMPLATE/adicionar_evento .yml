@@ -50,8 +50,7 @@ body:
       label: Local
       description: Informe o local do evento (ignorado se online).
       placeholder: "ex: Centro de Convenções"
-    validations:
-      required: true
+  
 
   - type: input
     id: cidade_evento
@@ -59,27 +58,21 @@ body:
       label: Cidade
       description: Cidade onde o evento será realizado.
       placeholder: "ex: São Paulo"
-    validations:
-      required: true
-
+  
   - type: input
     id: estado_evento
     attributes:
       label: Estado
       description: Estado onde o evento será realizado.
       placeholder: "ex: SP"
-    validations:
-      required: true
-
+    
   - type: input
     id: pais_evento
     attributes:
       label: País
       description: País onde o evento será realizado.
       placeholder: "ex: Brasil"
-    validations:
-      required: true
-
+    
   - type: markdown
     attributes:
       value: |
@@ -159,5 +152,4 @@ body:
       label: Outros (descreva)
       description: Caso tenha selecionado "Outros", descreva aqui.
       placeholder: "ex: Mesa redonda, Hackathon..."
-    validations:
-      required: false
+    
