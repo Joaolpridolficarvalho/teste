@@ -1,0 +1,20 @@
+{
+  "title": "adicionar evento",
+  "label": "🗓️ evento:adicionar",
+  "labels": [
+    "🗓️ evento:adicionar"
+  ],
+  "nome_do_evento": "Café com bug",
+  "site_do_evento": "https://github.com/Joaolpridolficarvalho/teste/issues",
+  "formato": "Online",
+  "local": "_No response_",
+  "cidade": "_No response_",
+  "estado": "_No response_",
+  "país": "_No response_",
+  "início": "2025-09-22",
+  "fim": "2025-10-11",
+  "início_da_submissão": "2025-09-01",
+  "fim_da_submissão": "2025-09-10",
+  "tipos_de_submissão": "- [x] Palestra\n- [x] Workshop\n- [ ] Lightning Talk\n- [ ] Painel\n- [x] Tutorial\n- [ ] Minicurso\n- [x] Sprint\n- [ ] Outros",
+  "outros_(descreva)": "_No response_"
+}
