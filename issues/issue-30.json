@@ -1,0 +1,18 @@
+{
+  "title": "adicionar evento",
+  "label": "",
+  "labels": [],
+  "nome_do_evento": "teste",
+  "site_do_evento": "https://github.com/Joaolpridolficarvalho/teste/issues",
+  "formato": "Online",
+  "local": "_No response_",
+  "cidade": "_No response_",
+  "estado": "_No response_",
+  "país": "_No response_",
+  "início": "2025-09-14",
+  "fim": "2025-09-24",
+  "início_da_submissão": "2025-09-03",
+  "fim_da_submissão": "2025-09-07",
+  "tipos_de_submissão": "- [ ] Palestra\n- [ ] Workshop\n- [ ] Lightning Talk\n- [ ] Painel\n- [ ] Tutorial\n- [ ] Minicurso\n- [ ] Sprint\n- [ ] Outros",
+  "outros_(descreva)": "_No response_"
+}
