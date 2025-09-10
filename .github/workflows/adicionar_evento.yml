@@ -13,6 +13,13 @@ jobs:
           echo "Número da issue: ${{ github.event.issue.number }}"
           echo "Labels: ${{ toJson(github.event.issue.labels) }}"
       
-      - name: Verificar se a issue tem a label 'eveno:adicionar'  // Abstrair para script .py
+      - name: Verificar se a issue tem a label 'eveno:adicionar'
         if: contains(join(github.event.issue.labels.*.name, ','), 'eveno:adicionar')
-        run: echo "A issue tem a label 'eveno:adicionar'"
+        run: |
+          echo "A issue contém a label 'eveno:adicionar'."
+          # Adicione aqui o código para processar a issue conforme necessário
+
+      - name: Verificar se a issue NÃO tem a label 'eveno:adicionar'
+        if: ${{ !contains(join(github.event.issue.labels.*.name, ','), 'eveno:adicionar') }}
+        run: |
+          echo "A issue não contém a label 'eveno:adicionar'."
