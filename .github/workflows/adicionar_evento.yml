@@ -16,7 +16,8 @@ jobs:
         uses: zentered/issue-forms-body-parser@v2.0.0
         id: parse
       - name: Exibir dados convertidos
-        run: echo "${{ toJson(steps.parse.outputs.data) }}"
+        run: |
+          echo '${{ steps.converter.outputs.data }}'
       - name: Verificar se a issue tem a label 'evento:adicionar'
         if: contains(join(github.event.issue.labels.*.name, ','), 'evento:adicionar')
         run: |
