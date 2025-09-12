@@ -15,15 +15,11 @@ jobs:
       - name: Converter issue para JSON
         uses: zentered/issue-forms-body-parser@v2.0.0
         id: parse
-      - name: Exibir dados convertidos
-        run: |
-          echo '${{ steps.converter.outputs.data }}'
-
       - name: Salvar dados da issue em um arquivo
         run: |
           echo '${{ steps.parse.outputs.data }}' > issue_data.json
           cat issue_data.json
-          
+
       - name: Verificar se a issue tem a label 'evento:adicionar'
         if: contains(join(github.event.issue.labels.*.name, ','), 'evento:adicionar')
         run: |
