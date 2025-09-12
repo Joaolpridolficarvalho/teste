@@ -26,4 +26,6 @@ jobs:
       - name: Verificar se a issue NÃO tem a label 'evento:adicionar'
         if: ${{ !contains(join(github.event.issue.labels.*.name, ','), 'evento:adicionar') }}
         run: |
-          echo "A issue não contém
+          echo "A issue não contém a label 'evento:adicionar'."
+          echo "JSON da issue: ${{ toJson(steps.parse.outputs.data) }}"
+          # Adicione aqui o código para processar a issue conforme necessário
