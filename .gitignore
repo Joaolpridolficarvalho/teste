@@ -2,3 +2,4 @@
 /.github/.idea/
 
 /script/__pycache__/
+/.github/workflows/pull_request_template.md
