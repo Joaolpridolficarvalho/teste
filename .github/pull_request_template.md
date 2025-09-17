@@ -1,13 +1,13 @@
 ## Descrição
-Adiciona filtro para processar somente issues com o label "evento:adicionar".
+Modifica o workflow para exibir o json criado com a ferramenta zentered/issue-forms-body-parser.
 
 ## Mudanças Propostas
 - Atualiza o arquivo `.github/workflows/adicionar_evento.yml`.
 ## Benefícios da Mudança
-Permite fazer o processamento apenas de issues relevantes, evitando ações desnecessárias.
+Permite trabalhar com os dados da issue de forma mais estruturada.
 
 ## Como Testar
-Crie ou edite uma issue com o label "evento:adicionar" e uma issue sem esse label. Verifique se o workflow exibe um 'check' apenas para a issue com o label.
+Crie ou edite uma issue com o label "evento:adicionar" e uma issue sem esse label. Verifique se o workflow exibe o json corretamente.
 
 ## Anexos
 
@@ -23,4 +23,4 @@ Crie ou edite uma issue com o label "evento:adicionar" e uma issue sem esse labe
 ## Issue Relacionada
 <!---Todos os PRs devem ter uma issue relacionada. Dessa forma, podemos garantir que ninguém perca tempo trabalhando em algo que não precisa ser feito. -->
 
-Closes #43
+Closes #45
