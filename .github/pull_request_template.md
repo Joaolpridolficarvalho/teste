@@ -1,10 +1,11 @@
 ## Descrição
-Modifica o workflow para exibir o json criado com a ferramenta zentered/issue-forms-body-parser.
+Modifica o workflow para executar o script `adicionar_evento.py` imprimindo o JSON da issue quando uma issue é criada ou editada com o label "🗓️ evento:adicionar" e limpar a saída. 
 
 ## Mudanças Propostas
 - Atualiza o arquivo `.github/workflows/adicionar_evento.yml`.
+- Adiciona o script `backend/adicionar_evento.py` que extrai e imprime o JSON da issue.
 ## Benefícios da Mudança
-Permite trabalhar com os dados da issue de forma mais estruturada.
+Permite melhor organização do código e facilita a manutenção do workflow.
 
 ## Como Testar
 Crie ou edite uma issue com o label "evento:adicionar" e uma issue sem esse label. Verifique se o workflow exibe o json corretamente.
@@ -23,4 +24,4 @@ Crie ou edite uma issue com o label "evento:adicionar" e uma issue sem esse labe
 ## Issue Relacionada
 <!---Todos os PRs devem ter uma issue relacionada. Dessa forma, podemos garantir que ninguém perca tempo trabalhando em algo que não precisa ser feito. -->
 
-Closes #45
+Closes #46
