@@ -10,6 +10,9 @@ jobs:
     env:
       NOME_ARQUIVO: issue_data.json
     steps:
+      - name: Verificar checkout do repositório
+        uses: actions/checkout@v4
+        
       - name: Exibir número e labels da issue
         run: |
           echo "Número da issue: ${{ github.event.issue.number }}"
