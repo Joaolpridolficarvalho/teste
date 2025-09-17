@@ -7,7 +7,7 @@ on:
 jobs:
   mostrar-info:
     runs-on: ubuntu-latest
-    vars:
+    env:
       NOME_ARQUIVO: issue_data.json
     steps:
       - name: Exibir número e labels da issue
