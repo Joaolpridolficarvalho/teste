@@ -6,6 +6,7 @@ def carregar_dados_issues():
         return json.load(file)
     
 def imprimir_issue(issue):
+    print("Arquivo: script/adicionar_evento.py")
     print(issue)
 
 if __name__ == "__main__":
