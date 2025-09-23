@@ -26,7 +26,7 @@ jobs:
         if: contains(join(github.event.issue.labels.*.name, ','), '🗓️ evento:adicionar')
         run: |
           echo "A issue contém a label 'evento:adicionar'."
-          python3 backend/adicionar_evento.py ${NOME_ARQUIVO}
+          python3 script/adicionar_evento.py ${NOME_ARQUIVO}
          
 
       
