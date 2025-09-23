@@ -13,11 +13,6 @@ jobs:
       - name: Verificar checkout do repositório
         uses: actions/checkout@v4
 
-      - name: Exibir número e labels da issue
-        run: |
-          echo "Número da issue: ${{ github.event.issue.number }}"
-          echo "Labels: ${{ toJson(github.event.issue.labels) }}"
-
       - name: Converter issue para JSON
         uses: zentered/issue-forms-body-parser@v2.0.0
         id: parse
@@ -34,7 +29,4 @@ jobs:
           python3 backend/adicionar_evento.py ${NOME_ARQUIVO}
          
 
-      - name: Verificar se a issue NÃO tem a label 'evento:adicionar'
-        if: ${{ !contains(join(github.event.issue.labels.*.name, ','), '🗓️ evento:adicionar') }}
-        run: |
-          echo "A issue não contém a label 'evento:adicionar'."
+      
