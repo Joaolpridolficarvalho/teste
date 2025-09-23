@@ -1,111 +1,155 @@
-{  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Evento",
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Evento Parseado",
   "type": "object",
   "properties": {
-    "Nome do Evento": {
-      "type": "string"
-    },
-    "Site do Evento": {
-      "type": "string",
-      "format": "uri"
-    },
-    "Formato do Evento": {
-      "type": "string",
-      "enum": ["Online", "Híbrido", "Presencial"]
-    },
-    "Cidade": {
-      "type": ["string", "null"]
-    },
-    "Estado/Província": {
-      "type": ["string", "null"]
-    },
-    "País": {
-      "type": ["string", "null"]
-    },
-    "Ano do primeiro dia de Evento": {
-      "type": "integer",
-      "minimum": 1900
-    },
-    "Mês do primeiro dia de Evento": {
-      "type": "string"
-    },
-    "Dia do primeiro dia de Evento": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 31
-    },
-    "Ano do último dia de Evento": {
-      "type": "integer",
-      "minimum": 1900
-    },
-    "Mês do último dia de Evento": {
-      "type": "string"
-    },
-    "Dia do último dia de Evento": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 31
-    },
-    "Ano do primeiro dia de Submissão": {
-      "type": "integer",
-      "minimum": 1900
-    },
-    "Mês do primeiro dia de Submissão": {
-      "type": "string"
-    },
-    "Dia do primeiro dia de Submissão": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 31
-    },
-    "Ano do último dia de Submissão": {
-      "type": "integer",
-      "minimum": 1900
-    },
-    "Mês do último dia de Submissão": {
-      "type": "string"
-    },
-    "Dia do último dia de Submissão": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 31
-    },
-    "Tipos de Submissão aceitos": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": [
-          "Palestra",
-          "Workshop",
-          "Lightning talk",
-          "Painel",
-          "Tutorial",
-          "Minicurso",
-          "Outros"
-        ]
+    "nome-do-evento": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "text": { "type": "string" }
       },
-      "uniqueItems": true
+      "required": ["title", "content", "text"]
     },
-    "Se marcou “Outros”, especifique": {
-      "type": ["string", "null"]
+    "site-do-evento": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "text": { "type": "string", "format": "uri" }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "formato-do-evento": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "text": { "type": "string", "enum": ["Online", "Híbrido", "Presencial", "*No response*"] }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "cidade-deixe-em-branco-se-online": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "text": { "type": "string" }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "estado-provincia-deixe-em-branco-se-online": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "text": { "type": "string" }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "pais-deixe-em-branco-se-online": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "text": { "type": "string" }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "ano-do-primeiro-dia-de-evento": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string", "pattern": "^[0-9]{4}$" } },
+        "text": { "type": "string", "pattern": "^[0-9]{4}$" }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "mes-do-primeiro-dia-de-evento": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "text": { "type": "string" }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "dia-do-primeiro-dia-de-evento": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string", "pattern": "^[0-9]{1,2}$" } },
+        "text": { "type": "string", "pattern": "^[0-9]{1,2}$" }
+      },
+      "required": ["title", "content", "text"]
+    },
+    "ano-do-ultimo-dia-de-evento": { "$ref": "#/properties/ano-do-primeiro-dia-de-evento" },
+    "mes-do-ultimo-dia-de-evento": { "$ref": "#/properties/mes-do-primeiro-dia-de-evento" },
+    "dia-do-ultimo-dia-de-evento": { "$ref": "#/properties/dia-do-primeiro-dia-de-evento" },
+    "ano-do-primeiro-dia-de-submissao": { "$ref": "#/properties/ano-do-primeiro-dia-de-evento" },
+    "mes-do-primeiro-dia-de-submissao": { "$ref": "#/properties/mes-do-primeiro-dia-de-evento" },
+    "dia-do-primeiro-dia-de-submissao": { "$ref": "#/properties/dia-do-primeiro-dia-de-evento" },
+    "ano-do-ultimo-dia-de-submissao": { "$ref": "#/properties/ano-do-primeiro-dia-de-evento" },
+    "mes-do-ultimo-dia-de-submissao": { "$ref": "#/properties/mes-do-primeiro-dia-de-evento" },
+    "dia-do-ultimo-dia-de-submissao": { "$ref": "#/properties/dia-do-primeiro-dia-de-evento" },
+    "tipos-de-submissao-aceitos": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array" },
+        "text": { "type": "string" },
+        "list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "checked": { "type": "boolean" },
+              "text": {
+                "type": "string",
+                "enum": [
+                  "Palestra",
+                  "Workshop",
+                  "Lightning talk",
+                  "Painel",
+                  "Tutorial",
+                  "Minicurso",
+                  "Outros (especificar abaixo)"
+                ]
+              }
+            },
+            "required": ["checked", "text"]
+          }
+        }
+      },
+      "required": ["title", "text", "list"]
+    },
+    "se-marcou-outros-especifique": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "array", "items": { "type": "string" } },
+        "text": { "type": "string" }
+      },
+      "required": ["title", "content", "text"]
     }
   },
   "required": [
-    "Nome do Evento",
-    "Site do Evento",
-    "Formato do Evento",
-    "Ano do primeiro dia de Evento",
-    "Mês do primeiro dia de Evento",
-    "Dia do primeiro dia de Evento",
-    "Ano do último dia de Evento",
-    "Mês do último dia de Evento",
-    "Dia do último dia de Evento",
-    "Ano do primeiro dia de Submissão",
-    "Mês do primeiro dia de Submissão",
-    "Dia do primeiro dia de Submissão",
-    "Ano do último dia de Submissão",
-    "Mês do último dia de Submissão",
-    "Dia do último dia de Submissão",
-    "Tipos de Submissão aceitos"
+    "nome-do-evento",
+    "site-do-evento",
+    "formato-do-evento",
+    "ano-do-primeiro-dia-de-evento",
+    "mes-do-primeiro-dia-de-evento",
+    "dia-do-primeiro-dia-de-evento",
+    "ano-do-ultimo-dia-de-evento",
+    "mes-do-ultimo-dia-de-evento",
+    "dia-do-ultimo-dia-de-evento",
+    "ano-do-primeiro-dia-de-submissao",
+    "mes-do-primeiro-dia-de-submissao",
+    "dia-do-primeiro-dia-de-submissao",
+    "ano-do-ultimo-dia-de-submissao",
+    "mes-do-ultimo-dia-de-submissao",
+    "dia-do-ultimo-dia-de-submissao",
+    "tipos-de-submissao-aceitos"
   ]
 }

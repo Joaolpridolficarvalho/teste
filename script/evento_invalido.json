@@ -1,25 +1,45 @@
 {
-  "Nome do Evento": 123, 
-  "Site do Evento": "filtro-por-label.cumbuca.dev", 
-  "Formato do Evento": "Remoto", 
-  "Cidade": "São Paulo",
-  "Estado/Província": "SP",
-  "País": "Brasil",
-  "Ano do primeiro dia de Evento": "2025",  
-  "Mês do primeiro dia de Evento": "Janeiro",
-  "Dia do primeiro dia de Evento": 40,  
-  "Ano do último dia de Evento": 2025,
-  "Mês do último dia de Evento": "Janeiro",
-  "Dia do último dia de Evento": 1,
-  "Ano do primeiro dia de Submissão": 2025,
-  "Mês do primeiro dia de Submissão": "Janeiro",
-  "Dia do primeiro dia de Submissão": 1,
-  "Ano do último dia de Submissão": 2025,
-  "Mês do último dia de Submissão": "Janeiro",
-  "Dia do último dia de Submissão": 1,
-  "Tipos de Submissão aceitos": [
-    "Palestra",
-    "Inovadora"
-  ],
-  "Se marcou “Outros”, especifique": "ii"
+  "nome-do-evento": {
+    "title": "Nome do Evento",
+    "content": ["PHP Brasil 2034"],
+    "text": "PHP Brasil 2034"
+  },
+  "site-do-evento": {
+    "title": "Site do Evento",
+    "content": [12345],
+    "text": 12345
+  },
+  "formato-do-evento": {
+    "title": "Formato do Evento",
+    "content": ["Online"],
+    "text": "Online"
+  },
+  "cidade-deixe-em-branco-se-online": {
+    "title": "Cidade (deixe em branco se online)",
+    "content": ["São Paulo"],
+    "text": "São Paulo"
+  },
+  "ano-do-primeiro-dia-de-evento": {
+    "title": "Ano do primeiro dia de Evento",
+    "content": ["2028"],
+    "text": "2028"
+  },
+  "mes-do-primeiro-dia-de-evento": {
+    "title": "Mês do primeiro dia de Evento",
+    "content": ["Janeiro"],
+    "text": "Janeiro"
+  },
+  "dia-do-primeiro-dia-de-evento": {
+    "title": "Dia do primeiro dia de Evento",
+    "content": ["05"],
+    "text": "05"
+  },
+  "tipos-de-submissao-aceitos": {
+    "title": "Tipos de Submissão aceitos",
+    "content": [],
+    "text": "*   [x] Workshop",
+    "list": [
+      {"checked": "sim", "text": "Workshop"}  
+    ]
+  }
 }

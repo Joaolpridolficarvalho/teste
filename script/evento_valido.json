@@ -1,27 +1,107 @@
 {
-  "Nome do Evento": "TESTANDO FILTRO POR LABEL",
-  "Site do Evento": "https://filtro-por-label.cumbuca.dev",
-  "Formato do Evento": "Online",
-  "Cidade": null,
-  "Estado/Província": null,
-  "País": null,
-  "Ano do primeiro dia de Evento": 2025,
-  "Mês do primeiro dia de Evento": "Janeiro",
-  "Dia do primeiro dia de Evento": 1,
-  "Ano do último dia de Evento": 2025,
-  "Mês do último dia de Evento": "Janeiro",
-  "Dia do último dia de Evento": 1,
-  "Ano do primeiro dia de Submissão": 2025,
-  "Mês do primeiro dia de Submissão": "Janeiro",
-  "Dia do primeiro dia de Submissão": 1,
-  "Ano do último dia de Submissão": 2025,
-  "Mês do último dia de Submissão": "Janeiro",
-  "Dia do último dia de Submissão": 1,
-  "Tipos de Submissão aceitos": [
-    "Palestra",
-    "Workshop",
-    "Lightning talk"
-  ],
-  "Se marcou “Outros”, especifique": null
+  "nome-do-evento": {
+    "title": "Nome do Evento",
+    "content": ["PHP Brasil 2034"],
+    "text": "PHP Brasil 2034"
+  },
+  "site-do-evento": {
+    "title": "Site do Evento",
+    "content": ["https://phpbrasil.org/"],
+    "text": "https://phpbrasil.org/"
+  },
+  "formato-do-evento": {
+    "title": "Formato do Evento",
+    "content": ["Online"],
+    "text": "Online"
+  },
+  "cidade-deixe-em-branco-se-online": {
+    "title": "Cidade (deixe em branco se online)",
+    "content": ["*No response*"],
+    "text": "*No response*"
+  },
+  "estado-provincia-deixe-em-branco-se-online": {
+    "title": "Estado/Província (deixe em branco se online)",
+    "content": ["*No response*"],
+    "text": "*No response*"
+  },
+  "pais-deixe-em-branco-se-online": {
+    "title": "País (deixe em branco se online)",
+    "content": ["*No response*"],
+    "text": "*No response*"
+  },
+  "ano-do-primeiro-dia-de-evento": {
+    "title": "Ano do primeiro dia de Evento",
+    "content": ["2028"],
+    "text": "2028"
+  },
+  "mes-do-primeiro-dia-de-evento": {
+    "title": "Mês do primeiro dia de Evento",
+    "content": ["Janeiro"],
+    "text": "Janeiro"
+  },
+  "dia-do-primeiro-dia-de-evento": {
+    "title": "Dia do primeiro dia de Evento",
+    "content": ["05"],
+    "text": "05"
+  },
+  "ano-do-ultimo-dia-de-evento": {
+    "title": "Ano do último dia de Evento",
+    "content": ["2028"],
+    "text": "2028"
+  },
+  "mes-do-ultimo-dia-de-evento": {
+    "title": "Mês do último dia de Evento",
+    "content": ["Janeiro"],
+    "text": "Janeiro"
+  },
+  "dia-do-ultimo-dia-de-evento": {
+    "title": "Dia do último dia de Evento",
+    "content": ["08"],
+    "text": "08"
+  },
+  "ano-do-primeiro-dia-de-submissao": {
+    "title": "Ano do primeiro dia de Submissão",
+    "content": ["2027"],
+    "text": "2027"
+  },
+  "mes-do-primeiro-dia-de-submissao": {
+    "title": "Mês do primeiro dia de Submissão",
+    "content": ["Dezembro"],
+    "text": "Dezembro"
+  },
+  "dia-do-primeiro-dia-de-submissao": {
+    "title": "Dia do primeiro dia de Submissão",
+    "content": ["01"],
+    "text": "01"
+  },
+  "ano-do-ultimo-dia-de-submissao": {
+    "title": "Ano do último dia de Submissão",
+    "content": ["2027"],
+    "text": "2027"
+  },
+  "mes-do-ultimo-dia-de-submissao": {
+    "title": "Mês do último dia de Submissão",
+    "content": ["Dezembro"],
+    "text": "Dezembro"
+  },
+  "dia-do-ultimo-dia-de-submissao": {
+    "title": "Dia do último dia de Submissão",
+    "content": ["20"],
+    "text": "20"
+  },
+  "tipos-de-submissao-aceitos": {
+    "title": "Tipos de Submissão aceitos",
+    "content": [],
+    "text": "*   [x] Palestra\n*   [ ] Workshop\n*   [ ] Lightning talk",
+    "list": [
+      {"checked": true, "text": "Palestra"},
+      {"checked": false, "text": "Workshop"},
+      {"checked": false, "text": "Lightning talk"}
+    ]
+  },
+  "se-marcou-outros-especifique": {
+    "title": "Se marcou “Outros”, especifique",
+    "content": ["*No response*"],
+    "text": "*No response*"
+  }
 }
-
