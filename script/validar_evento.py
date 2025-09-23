@@ -2,7 +2,7 @@ from jsonschema import validate
 import json
 import os
 
-caminho_esquema = './script/esquema_evento.json'
+caminho_esquema = './script/esquema.json'
 with open(caminho_esquema, 'r', encoding='utf-8') as f:
     esquema_evento = json.load(f)
 def validar_evento(evento):
