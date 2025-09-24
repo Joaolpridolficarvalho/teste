@@ -38,6 +38,8 @@ if __name__ == "__main__":
     caminho_issue = os.path.join(os.path.dirname(BASE_DIR), "issue_data.json")
     if validar_evento(carregar_evento_de_arquivo(caminho_issue)):
         print("issue_data.json é válido.")
+        os._exit(0)
     else:
         print("issue_data.json é inválido.")
+        os._exit(1)
 

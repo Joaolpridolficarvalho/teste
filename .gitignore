@@ -4,5 +4,6 @@
 /script/__pycache__/
 
 .github/pull_request_template.md
-issues_pack_standard_label
-issues_pack_standard_label.zip
+issues_eventos 
+*.zip
+*.bat

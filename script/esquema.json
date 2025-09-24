@@ -3,6 +3,7 @@
   "title": "Evento Parseado",
   "type": "object",
   "properties": {
+    "label": { "type": "string", "const": "🗓️ evento:adicionar" },
     "nome-do-evento": {
       "type": "object",
       "properties": {

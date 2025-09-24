@@ -10,6 +10,5 @@ def imprimir_issue(issue):
     print(issue)
 
 if __name__ == "__main__":
-    labels = ['🗓️ evento:adicionar']
     dados_issues = carregar_dados_issues()
     imprimir_issue(dados_issues)
