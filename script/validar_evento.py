@@ -25,16 +25,19 @@ def carregar_evento_de_arquivo(caminho_arquivo):
 
 if __name__ == "__main__":
     # Exemplos de uso
-    caminho_arquivo_valido = os.path.join(BASE_DIR, "evento_valido.json")
-    caminho_arquivo_invalido = os.path.join(BASE_DIR, "evento_invalido.json")
+    # caminho_arquivo_valido = os.path.join(BASE_DIR, "evento_valido.json")
+    # caminho_arquivo_invalido = os.path.join(BASE_DIR, "evento_invalido.json")
 
-    evento_valido = carregar_evento_de_arquivo(caminho_arquivo_valido)
-    evento_invalido = carregar_evento_de_arquivo(caminho_arquivo_invalido)
+    # evento_valido = carregar_evento_de_arquivo(caminho_arquivo_valido)
+    # evento_invalido = carregar_evento_de_arquivo(caminho_arquivo_invalido)
 
-    print("Evento Válido:", validar_evento(evento_valido))    # Deve retornar True
-    print("Evento Inválido:", validar_evento(evento_invalido))  # Deve retornar False
+    # print("Evento Válido:", validar_evento(evento_valido))    # Deve retornar True
+    # print("Evento Inválido:", validar_evento(evento_invalido))  # Deve retornar False
 
     # Exemplo para o issue_data.json (no repositório raiz)
     caminho_issue = os.path.join(os.path.dirname(BASE_DIR), "issue_data.json")
-    if os.path.exists(caminho_issue):
-        print("Resultado issue_data.json:", validar_evento(carregar_evento_de_arquivo(caminho_issue)))
+    if validar_evento(carregar_evento_de_arquivo(caminho_issue)):
+        print("issue_data.json é válido.")
+    else:
+        print("issue_data.json é inválido.")
+
