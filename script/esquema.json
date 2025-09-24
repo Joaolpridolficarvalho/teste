@@ -4,7 +4,8 @@
   "type": "object",
   "properties": {
     "label": { "type": "string", "const": "🗓️ evento:adicionar" },
-    "nome-do-evento": {
+
+    "nome do evento": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -13,7 +14,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "site-do-evento": {
+
+    "site do evento": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -22,7 +24,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "formato-do-evento": {
+
+    "formato do evento": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -31,7 +34,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "cidade-deixe-em-branco-se-online": {
+
+    "cidade": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -40,7 +44,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "estado-provincia-deixe-em-branco-se-online": {
+
+    "estado": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -49,7 +54,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "pais-deixe-em-branco-se-online": {
+
+    "pais": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -58,7 +64,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "ano-do-primeiro-dia-de-evento": {
+
+    "ano do primeiro dia de evento": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -67,7 +74,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "mes-do-primeiro-dia-de-evento": {
+
+    "mes do primeiro dia de evento": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -76,7 +84,8 @@
       },
       "required": ["title", "content", "text"]
     },
-    "dia-do-primeiro-dia-de-evento": {
+
+    "dia do primeiro dia de evento": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -85,16 +94,20 @@
       },
       "required": ["title", "content", "text"]
     },
-    "ano-do-ultimo-dia-de-evento": { "$ref": "#/properties/ano-do-primeiro-dia-de-evento" },
-    "mes-do-ultimo-dia-de-evento": { "$ref": "#/properties/mes-do-primeiro-dia-de-evento" },
-    "dia-do-ultimo-dia-de-evento": { "$ref": "#/properties/dia-do-primeiro-dia-de-evento" },
-    "ano-do-primeiro-dia-de-submissao": { "$ref": "#/properties/ano-do-primeiro-dia-de-evento" },
-    "mes-do-primeiro-dia-de-submissao": { "$ref": "#/properties/mes-do-primeiro-dia-de-evento" },
-    "dia-do-primeiro-dia-de-submissao": { "$ref": "#/properties/dia-do-primeiro-dia-de-evento" },
-    "ano-do-ultimo-dia-de-submissao": { "$ref": "#/properties/ano-do-primeiro-dia-de-evento" },
-    "mes-do-ultimo-dia-de-submissao": { "$ref": "#/properties/mes-do-primeiro-dia-de-evento" },
-    "dia-do-ultimo-dia-de-submissao": { "$ref": "#/properties/dia-do-primeiro-dia-de-evento" },
-    "tipos-de-submissao-aceitos": {
+
+    "ano do ultimo dia de evento": { "$ref": "#/properties/ano do primeiro dia de evento" },
+    "mes do ultimo dia de evento": { "$ref": "#/properties/mes do primeiro dia de evento" },
+    "dia do ultimo dia de evento": { "$ref": "#/properties/dia do primeiro dia de evento" },
+
+    "ano do primeiro dia de submissao": { "$ref": "#/properties/ano do primeiro dia de evento" },
+    "mes do primeiro dia de submissao": { "$ref": "#/properties/mes do primeiro dia de evento" },
+    "dia do primeiro dia de submissao": { "$ref": "#/properties/dia do primeiro dia de evento" },
+
+    "ano do ultimo dia de submissao": { "$ref": "#/properties/ano do primeiro dia de evento" },
+    "mes do ultimo dia de submissao": { "$ref": "#/properties/mes do primeiro dia de evento" },
+    "dia do ultimo dia de submissao": { "$ref": "#/properties/dia do primeiro dia de evento" },
+
+    "tipos de submissao aceitos": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -125,7 +138,8 @@
       },
       "required": ["title", "text", "list"]
     },
-    "se-marcou-outros-especifique": {
+
+    "outros especifique": {
       "type": "object",
       "properties": {
         "title": { "type": "string" },
@@ -135,22 +149,23 @@
       "required": ["title", "content", "text"]
     }
   },
+
   "required": [
-    "nome-do-evento",
-    "site-do-evento",
-    "formato-do-evento",
-    "ano-do-primeiro-dia-de-evento",
-    "mes-do-primeiro-dia-de-evento",
-    "dia-do-primeiro-dia-de-evento",
-    "ano-do-ultimo-dia-de-evento",
-    "mes-do-ultimo-dia-de-evento",
-    "dia-do-ultimo-dia-de-evento",
-    "ano-do-primeiro-dia-de-submissao",
-    "mes-do-primeiro-dia-de-submissao",
-    "dia-do-primeiro-dia-de-submissao",
-    "ano-do-ultimo-dia-de-submissao",
-    "mes-do-ultimo-dia-de-submissao",
-    "dia-do-ultimo-dia-de-submissao",
-    "tipos-de-submissao-aceitos"
+    "nome do evento",
+    "site do evento",
+    "formato do evento",
+    "ano do primeiro dia de evento",
+    "mes do primeiro dia de evento",
+    "dia do primeiro dia de evento",
+    "ano do ultimo dia de evento",
+    "mes do ultimo dia de evento",
+    "dia do ultimo dia de evento",
+    "ano do primeiro dia de submissao",
+    "mes do primeiro dia de submissao",
+    "dia do primeiro dia de submissao",
+    "ano do ultimo dia de submissao",
+    "mes do ultimo dia de submissao",
+    "dia do ultimo dia de submissao",
+    "tipos de submissao aceitos"
   ]
 }
