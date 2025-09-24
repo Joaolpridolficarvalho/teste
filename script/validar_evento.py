@@ -43,3 +43,15 @@ if __name__ == "__main__":
         print("issue_data.json é inválido.")
         os._exit(1)
 
+
+    # Teste
+    # caminho_pasta_issues = os.path.join(os.path.dirname(BASE_DIR), "issues_eventos")
+    # for nome_arquivo in os.listdir(caminho_pasta_issues):
+    #     if nome_arquivo.endswith(".json"):
+    #         caminho_arquivo = os.path.join(caminho_pasta_issues, nome_arquivo)
+    #         evento = carregar_evento_de_arquivo(caminho_arquivo)
+    #         if validar_evento(evento):
+    #             print(f"{nome_arquivo} é válido.")
+    #         else:
+    #             print(f"{nome_arquivo} é inválido.")
+                

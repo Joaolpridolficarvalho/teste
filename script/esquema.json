@@ -1,171 +1,93 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Evento Parseado",
+  "title": "Esquema de Evento",
   "type": "object",
   "properties": {
-    "label": { "type": "string", "const": "🗓️ evento:adicionar" },
+    "Nome do Evento": { "type": "string", "minLength": 1 },
+    "Site do Evento": { "type": "string", "format": "uri" },
+    "Formato do Evento": {
+      "type": "string",
+      "enum": ["Presencial", "Online", "Híbrido"]
+    },
+    "Cidade": { "type": "string" },
+    "Estado/Província": { "type": "string" },
+    "País": { "type": "string" },
 
-    "nome do evento": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "string" }
+    "Ano do primeiro dia de Evento": { "type": "integer", "minimum": 2000 },
+    "Mês do primeiro dia de Evento": {
+      "type": "string",
+      "enum": [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      ]
+    },
+    "Dia do primeiro dia de Evento": { "type": "integer", "minimum": 1, "maximum": 31 },
+
+    "Ano do último dia de Evento": { "type": "integer", "minimum": 2000 },
+    "Mês do último dia de Evento": {
+      "type": "string",
+      "enum": [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      ]
+    },
+    "Dia do último dia de Evento": { "type": "integer", "minimum": 1, "maximum": 31 },
+
+    "Ano do primeiro dia de Submissão": { "type": "integer", "minimum": 2000 },
+    "Mês do primeiro dia de Submissão": {
+      "type": "string",
+      "enum": [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      ]
+    },
+    "Dia do primeiro dia de Submissão": { "type": "integer", "minimum": 1, "maximum": 31 },
+
+    "Ano do último dia de Submissão": { "type": "integer", "minimum": 2000 },
+    "Mês do último dia de Submissão": {
+      "type": "string",
+      "enum": [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      ]
+    },
+    "Dia do último dia de Submissão": { "type": "integer", "minimum": 1, "maximum": 31 },
+
+    "Tipos de Submissão aceitos": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["Palestra", "Workshop", "Lightning talk", "Outros"]
       },
-      "required": ["title", "content", "text"]
+      "minItems": 1
+    },
+    "Se marcou “Outros”, especifique": {
+      "type": ["string", "null"]
     },
 
-    "site do evento": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string", "format": "uri" } },
-        "text": { "type": "string", "format": "uri" }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "formato do evento": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "string", "enum": ["Online", "Híbrido", "Presencial", "*No response*"] }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "cidade": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "string" }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "estado": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "string" }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "pais": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "string" }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "ano do primeiro dia de evento": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string", "pattern": "^[0-9]{4}$" } },
-        "text": { "type": "string", "pattern": "^[0-9]{4}$" }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "mes do primeiro dia de evento": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "string" }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "dia do primeiro dia de evento": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string", "pattern": "^[0-9]{1,2}$" } },
-        "text": { "type": "string", "pattern": "^[0-9]{1,2}$" }
-      },
-      "required": ["title", "content", "text"]
-    },
-
-    "ano do ultimo dia de evento": { "$ref": "#/properties/ano do primeiro dia de evento" },
-    "mes do ultimo dia de evento": { "$ref": "#/properties/mes do primeiro dia de evento" },
-    "dia do ultimo dia de evento": { "$ref": "#/properties/dia do primeiro dia de evento" },
-
-    "ano do primeiro dia de submissao": { "$ref": "#/properties/ano do primeiro dia de evento" },
-    "mes do primeiro dia de submissao": { "$ref": "#/properties/mes do primeiro dia de evento" },
-    "dia do primeiro dia de submissao": { "$ref": "#/properties/dia do primeiro dia de evento" },
-
-    "ano do ultimo dia de submissao": { "$ref": "#/properties/ano do primeiro dia de evento" },
-    "mes do ultimo dia de submissao": { "$ref": "#/properties/mes do primeiro dia de evento" },
-    "dia do ultimo dia de submissao": { "$ref": "#/properties/dia do primeiro dia de evento" },
-
-    "tipos de submissao aceitos": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array" },
-        "text": { "type": "string" },
-        "list": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "checked": { "type": "boolean" },
-              "text": {
-                "type": "string",
-                "enum": [
-                  "Palestra",
-                  "Workshop",
-                  "Lightning talk",
-                  "Painel",
-                  "Tutorial",
-                  "Minicurso",
-                  "Outros (especificar abaixo)"
-                ]
-              }
-            },
-            "required": ["checked", "text"]
-          }
-        }
-      },
-      "required": ["title", "text", "list"]
-    },
-
-    "outros especifique": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "array", "items": { "type": "string" } },
-        "text": { "type": "string" }
-      },
-      "required": ["title", "content", "text"]
+    "Label": {
+      "type": "string",
+      "enum": ["evento:adicionar", "evento:remover"]
     }
   },
-
   "required": [
-    "nome do evento",
-    "site do evento",
-    "formato do evento",
-    "ano do primeiro dia de evento",
-    "mes do primeiro dia de evento",
-    "dia do primeiro dia de evento",
-    "ano do ultimo dia de evento",
-    "mes do ultimo dia de evento",
-    "dia do ultimo dia de evento",
-    "ano do primeiro dia de submissao",
-    "mes do primeiro dia de submissao",
-    "dia do primeiro dia de submissao",
-    "ano do ultimo dia de submissao",
-    "mes do ultimo dia de submissao",
-    "dia do ultimo dia de submissao",
-    "tipos de submissao aceitos"
+    "Nome do Evento",
+    "Site do Evento",
+    "Formato do Evento",
+    "País",
+    "Ano do primeiro dia de Evento",
+    "Mês do primeiro dia de Evento",
+    "Dia do primeiro dia de Evento",
+    "Ano do último dia de Evento",
+    "Mês do último dia de Evento",
+    "Dia do último dia de Evento",
+    "Ano do primeiro dia de Submissão",
+    "Mês do primeiro dia de Submissão",
+    "Dia do primeiro dia de Submissão",
+    "Ano do último dia de Submissão",
+    "Mês do último dia de Submissão",
+    "Dia do último dia de Submissão",
+    "Tipos de Submissão aceitos",
+    "Label"
   ]
 }
