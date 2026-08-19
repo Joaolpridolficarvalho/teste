@@ -27,7 +27,7 @@ jobs:
           PR_BODY=$(gh pr view "$PR_NUMBER" --json body --jq '.body // ""')
 
           ISSUE_NUMBER=$(printf '%s' "$PR_BODY" \
-            | grep -oiP '(?:fixes|closes|resolves)\s+#\K\d+' \
+            | grep -oiP '(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#\K\d+' \
             | head -1)
 
           if [ -z "$ISSUE_NUMBER" ]; then
