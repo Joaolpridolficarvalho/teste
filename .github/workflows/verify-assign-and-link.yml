@@ -78,14 +78,12 @@ jobs:
 
               COMMENT_BODY='🇧🇷 **Português**
           Esta issue ainda não está atribuída a ninguém. Por favor, atribua a issue a você antes de abrir uma PR.
-          Siga o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
-          para aprender como reivindicar uma issue.
+          Siga o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue) para aprender como reivindicar uma issue.
           Isso ajuda a evitar que várias pessoas trabalhem na mesma issue ao mesmo tempo.
           🇬🇧 **English**
           This issue is not assigned to anyone yet. Please assign the issue to yourself before opening a PR.
           Please follow the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
-          to learn how to claim an issue.
-          This helps us avoid multiple people working on the same issue at the same time.'
+          to learn how to claim an issue. This helps us avoid multiple people working on the same issue at the same time.'
 
               gh pr comment "$PR_NUMBER" --body "$COMMENT_BODY"
             fi
@@ -102,15 +100,12 @@ jobs:
 
               COMMENT_BODY='🇧🇷 **Português**
           Esta issue está atualmente atribuída a outra pessoa. Por favor, coordene com o responsável antes de abrir uma PR para esta issue.
-          Se você pretende trabalhar nela, certifique-se de que a issue esteja atribuída a você primeiro.
-          Veja o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
+          Se você pretende trabalhar nela, certifique-se de que a issue esteja atribuída a você primeiro. Veja o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
           para mais informações.
           🇬🇧 **English**
-          This issue is currently assigned to someone else.
-          Please coordinate with the assignee before opening a PR for this issue.
+          This issue is currently assigned to someone else. Please coordinate with the assignee before opening a PR for this issue.
           If you intend to work on it, please make sure the issue is assigned to you first.
-          See the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
-          for more information.'
+          See the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue) for more information.'
 
               gh pr comment "$PR_NUMBER" --body "$COMMENT_BODY"
             fi
