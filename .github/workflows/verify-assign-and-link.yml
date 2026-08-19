@@ -71,6 +71,7 @@ jobs:
 
           if [ -z "$ASSIGNEE" ]; then
             gh pr edit "$PR_NUMBER" --add-label "needs-assignment"
+            gh issue edit "$ISSUE_NUMBER" --add-label "needs-assignment"
 
             if ! gh pr view "$PR_NUMBER" --json comments \
               --jq '.comments[].body' \
@@ -88,11 +89,18 @@ jobs:
               gh pr comment "$PR_NUMBER" --body "$COMMENT_BODY"
             fi
 
+            if ! gh issue view "$ISSUE_NUMBER" --json comments \
+              --jq '.comments[].body' \
+              | grep -Fq "This issue is not assigned to anyone yet."; then
+              gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_BODY"
+            fi
+
             exit 1
           fi
 
           if [ "$ASSIGNEE" != "$PR_AUTHOR" ]; then
             gh pr edit "$PR_NUMBER" --add-label "needs-assignment"
+            gh issue edit "$ISSUE_NUMBER" --add-label "needs-assignment"
 
             if ! gh pr view "$PR_NUMBER" --json comments \
               --jq '.comments[].body' \
@@ -110,10 +118,17 @@ jobs:
               gh pr comment "$PR_NUMBER" --body "$COMMENT_BODY"
             fi
 
+            if ! gh issue view "$ISSUE_NUMBER" --json comments \
+              --jq '.comments[].body' \
+              | grep -Fq "This issue is currently assigned to someone else."; then
+              gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_BODY"
+            fi
+
             exit 1
           fi
 
           gh pr edit "$PR_NUMBER" --remove-label "needs-assignment" 2>/dev/null || true
+          gh issue edit "$ISSUE_NUMBER" --remove-label "needs-assignment" 2>/dev/null || true
 
           echo "Issue #$ISSUE_NUMBER is assigned to PR author $PR_AUTHOR."
 
