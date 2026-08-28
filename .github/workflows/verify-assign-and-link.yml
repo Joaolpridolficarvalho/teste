@@ -11,6 +11,7 @@ on:
     types:
       - assigned
       - unassigned
+      - edited
 
 permissions:
   contents: read
