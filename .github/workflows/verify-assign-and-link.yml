@@ -133,26 +133,35 @@ jobs:
 
       - name: Comment when issue is not assigned to PR author
         if: always() && steps.find_pr.outputs.pr_number != '' && steps.verify_assignment.outputs.status != 'assigned' && steps.verify_assignment.outputs.status != ''
-        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 #v3.0.5
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          header: issue-assignment-required
-          message: |
-            🇧🇷 **Português**
-            Esta issue não está atualmente atribuída a você. Por favor, coordene com o responsável antes de abrir uma PR para esta issue. Se você pretende trabalhar nela, certifique-se de que a issue esteja atribuída a você primeiro. Veja o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue) para mais informações.
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ steps.verify_link.outputs.issue_number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          gh api \
+            --method POST \
+            "repos/$REPOSITORY/issues/$ISSUE_NUMBER/comments" \
+            -f body='<!-- issue-assignment-required -->
+          🇧🇷 **Português**
+          Esta issue não está atualmente atribuída a você. Por favor, coordene com o responsável antes de abrir uma PR para esta issue. Se você pretende trabalhar nela, certifique-se de que a issue esteja atribuída a você primeiro. Veja o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue) para mais informações.
 
-            🇬🇧 **English**
-            This issue isn't currently assigned to you. Please coordinate with the assignee before opening a PR for this issue. If you intend to work on it, please make sure the issue is assigned to you first. See the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue) for more information.
+          🇬🇧 **English**
+          This issue is not currently assigned to you. Please coordinate with the assignee before opening a PR for this issue. If you intend to work on it, please make sure the issue is assigned to you first. See the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue) for more information.'
 
       - name: Remove assignment comment when checks pass
         if: always() && steps.find_pr.outputs.pr_number != '' && steps.verify_assignment.outputs.status == 'assigned'
-        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 #v3.0.5
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          header: issue-assignment-required
-          delete: true
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ steps.verify_link.outputs.issue_number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          gh api --paginate \
+            "repos/$REPOSITORY/issues/$ISSUE_NUMBER/comments" \
+            --jq '.[] | select(.body | contains("<!-- issue-assignment-required -->")) | .id' \
+            | while read -r COMMENT_ID; do
+                gh api --method DELETE \
+                  "repos/$REPOSITORY/issues/comments/$COMMENT_ID"
+              done
 
       - name: Remove validation labels when checks pass
         if: always() && steps.find_pr.outputs.pr_number != ''
@@ -193,7 +202,7 @@ jobs:
 
                 gh api --paginate \
                   "repos/$REPOSITORY/issues/$OLD_ISSUE_NUMBER/comments" \
-                  --jq '.[] | select(.body | contains("This issue is not assigned to anyone yet.") or contains("This issue is currently assigned to someone else.")) | .id' \
+                  --jq '.[] | select(.body | contains("<!-- issue-assignment-required -->") or contains("This issue is not assigned to anyone yet.") or contains("This issue is currently assigned to someone else.")) | .id' \
                   | while read -r COMMENT_ID; do
                       gh api --method DELETE \
                         "repos/$REPOSITORY/issues/comments/$COMMENT_ID" || true
