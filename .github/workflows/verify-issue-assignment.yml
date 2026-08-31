@@ -65,13 +65,13 @@ jobs:
             LINKED=$(gh pr view "$PR_NUMBER" \
               --repo "$REPOSITORY" \
               --json closingIssuesReferences \
-              --jq "--arg issue \"$ISSUE_NUMBER\" '
+              | jq --arg issue "$ISSUE_NUMBER" '
                 [
                   .closingIssuesReferences[]
-                  | select((.number | tostring) == \$issue)
+                  | select((.number | tostring) == $issue)
                 ]
                 | length
-              '")
+              ')
 
             if [ "$LINKED" -eq 0 ]; then
               continue
