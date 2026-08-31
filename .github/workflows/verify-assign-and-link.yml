@@ -159,6 +159,11 @@ jobs:
         run: |
           set -e
 
+          if [ -z "${ISSUE_NUMBER:-}" ]; then
+            echo "No issue number provided for this event; skipping issue validation."
+            exit 0
+          fi
+
           ASSIGNEE=$(gh issue view "$ISSUE_NUMBER" \
            --json assignees \
            --jq '.assignees[0].login // empty')
@@ -190,7 +195,7 @@ jobs:
              --jq '.[]')
 
            if [ -n "$PR_NUMBERS" ]; then
-             echo "$PR_NUMBERS" | jq -r 'if .author.login == "'$ASSIGNEE'" then "\(.number)" else empty end' | while IFS= read -r PR_NUMBER; do
+             echo "$PR_NUMBERS" | jq -r 'if .author.login == "'"$ASSIGNEE"'" then "\(.number)" else empty end' | while IFS= read -r PR_NUMBER; do
                if [ -n "$PR_NUMBER" ]; then
                  echo "Removing 'Needs Assignment' label from PR #$PR_NUMBER"
                  gh pr edit "$PR_NUMBER" --remove-label "Needs Assignment" 2>/dev/null || true

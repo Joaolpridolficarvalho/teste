@@ -33,6 +33,11 @@ jobs:
           echo "Event: $ACTION"
           echo "Issue: #$ISSUE_NUMBER"
 
+          if [ -z "${ISSUE_NUMBER:-}" ]; then
+            echo "No issue number provided for this event; skipping issue validation."
+            exit 0
+          fi
+
           ASSIGNEE=$(gh issue view "$ISSUE_NUMBER" \
             --json assignees \
             --jq '.assignees[0].login // empty')
@@ -60,13 +65,13 @@ jobs:
             LINKED=$(gh pr view "$PR_NUMBER" \
               --repo "$REPOSITORY" \
               --json closingIssuesReferences \
-              --jq --arg issue "$ISSUE_NUMBER" '
+              --jq "--arg issue \"$ISSUE_NUMBER\" '
                 [
                   .closingIssuesReferences[]
-                  | select((.number | tostring) == $issue)
+                  | select((.number | tostring) == \$issue)
                 ]
                 | length
-              ')
+              '")
 
             if [ "$LINKED" -eq 0 ]; then
               continue
