@@ -1,0 +1,20 @@
+name: Comment on Issue Assignment
+
+on:
+  issues:
+    types: [assigned]
+
+permissions:
+  issues: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comment "ok"
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" \
+            --body "ok"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
