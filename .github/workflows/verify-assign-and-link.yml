@@ -143,7 +143,7 @@ jobs:
 
   validate-issue:
     name: Validate Issue Assignment
-    if: github.event_name == 'issues'
+    
     runs-on: ubuntu-latest
 
     steps:
