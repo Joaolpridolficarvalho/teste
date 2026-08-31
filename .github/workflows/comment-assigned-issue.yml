@@ -16,8 +16,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Comment "ok"
-        run: |
-          gh issue comment "${{ github.event.issue.number }}" \
-            --body "ok"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+
+          if [ -z "${ISSUE_NUMBER:-}" ]; then
+            echo "No issue number provided for this event; skipping issue comment."
+            exit 0
+          fi
+
+          gh issue comment "$ISSUE_NUMBER" \
+            --body "ok"
