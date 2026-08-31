@@ -141,99 +141,60 @@ jobs:
           gh pr edit "$PR_NUMBER" \
             --remove-label "Needs Assignment" 2>/dev/null || true
 
-  find-related-prs:
-    name: Find PRs related to issue
+  validate-issue:
+    name: Validate Issue Assignment
     if: github.event_name == 'issues'
     runs-on: ubuntu-latest
 
-    outputs:
-      prs: ${{ steps.find.outputs.prs }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Find related pull requests
-        id: find
+      - name: Validate Issue Assignment
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          PRS=$(gh api \
-            --paginate \
-            "repos/$REPOSITORY/issues/$ISSUE_NUMBER/events" \
-            --jq '
-              .[]
-              | select(.event == "cross-referenced")
-              | .source.issue
-              | select(.pull_request != null)
-              | .number
-            ' \
-            | sort -u \
-            | jq -Rsc 'split("\n") | map(select(length > 0) | tonumber)')
-
-          echo "Related PRs: $PRS"
-
-          echo "prs=$PRS" >> "$GITHUB_OUTPUT"
-
-  validate-related-prs:
-    name: Revalidate related PRs
-    needs: find-related-prs
-    if: needs.find-related-prs.outputs.prs != '[]'
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        pr_number: ${{ fromJSON(needs.find-related-prs.outputs.prs) }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Revalidate PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ matrix.pr_number }}
+          ISSUE_ASSIGNEE: ${{ github.event.issue.assignee.login }}
           REPOSITORY: ${{ github.repository }}
         run: |
           set -e
 
-          PR_AUTHOR=$(gh pr view "$PR_NUMBER" \
-            --json author \
-            --jq '.author.login')
-
-          ISSUE_NUMBER=${{ github.event.issue.number }}
-
-          echo "Validating PR #$PR_NUMBER"
-          echo "Issue #$ISSUE_NUMBER"
-          echo "PR author: $PR_AUTHOR"
-
           ASSIGNEE=$(gh issue view "$ISSUE_NUMBER" \
-            --json assignees \
-            --jq '.assignees[0].login // empty')
+           --json assignees \
+           --jq '.assignees[0].login // empty')
 
           if [ -z "$ASSIGNEE" ]; then
-            echo "Issue #$ISSUE_NUMBER has no assignee."
+           echo "Issue #$ISSUE_NUMBER has been unassigned."
 
-            gh pr edit "$PR_NUMBER" --add-label "Needs Assignment"
+           # Find related PRs and add label
+           PR_NUMBERS=$(gh pr list \
+             --state open \
+             --search "closes #$ISSUE_NUMBER" \
+             --json number \
+             --jq '.[].number')
 
-            exit 1
+           if [ -n "$PR_NUMBERS" ]; then
+             while IFS= read -r PR_NUMBER; do
+               echo "Adding 'Needs Assignment' label to PR #$PR_NUMBER"
+               gh pr edit "$PR_NUMBER" --add-label "Needs Assignment" || true
+             done <<< "$PR_NUMBERS"
+           fi
+          else
+           echo "Issue #$ISSUE_NUMBER has been assigned to $ASSIGNEE."
+
+           # Find related PRs and remove label if the PR author matches
+           PR_NUMBERS=$(gh pr list \
+             --state open \
+             --search "closes #$ISSUE_NUMBER" \
+             --json number,author \
+             --jq '.[]')
+
+           if [ -n "$PR_NUMBERS" ]; then
+             echo "$PR_NUMBERS" | jq -r 'if .author.login == "'$ASSIGNEE'" then "\(.number)" else empty end' | while IFS= read -r PR_NUMBER; do
+               if [ -n "$PR_NUMBER" ]; then
+                 echo "Removing 'Needs Assignment' label from PR #$PR_NUMBER"
+                 gh pr edit "$PR_NUMBER" --remove-label "Needs Assignment" 2>/dev/null || true
+               fi
+             done
+           fi
           fi
-
-          if [ "$ASSIGNEE" != "$PR_AUTHOR" ]; then
-            echo "Issue #$ISSUE_NUMBER is assigned to $ASSIGNEE, not $PR_AUTHOR."
-
-            gh pr edit "$PR_NUMBER" --add-label "Needs Assignment"
-
-            exit 1
-          fi
-
-          echo "Issue #$ISSUE_NUMBER is assigned to PR author."
-
-          gh pr edit "$PR_NUMBER" \
-            --remove-label "Needs Assignment" 2>/dev/null || true
-
-          gh pr edit "$PR_NUMBER" \
-            --remove-label "Needs Issue" 2>/dev/null || true
-
