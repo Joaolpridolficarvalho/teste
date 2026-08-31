@@ -35,8 +35,8 @@ jobs:
           set -e
 
           ISSUE_NUMBER=$(gh pr view "$PR_NUMBER" \
-            --json linkedIssues \
-            --jq '.linkedIssues[0].number // empty')
+            --json closingIssuesReferences \
+            --jq '.closingIssuesReferences[0].number // empty')
 
           if [ -z "$ISSUE_NUMBER" ]; then
             echo "PR #$PR_NUMBER is not linked to an issue."
