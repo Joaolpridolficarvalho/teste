@@ -25,6 +25,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Validate PR
         env:
           GH_TOKEN: ${{ github.token }}
@@ -147,6 +150,9 @@ jobs:
       prs: ${{ steps.find.outputs.prs }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Find related pull requests
         id: find
         env:
@@ -182,6 +188,9 @@ jobs:
         pr_number: ${{ fromJSON(needs.find-related-prs.outputs.prs) }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Revalidate PR
         env:
           GH_TOKEN: ${{ github.token }}
