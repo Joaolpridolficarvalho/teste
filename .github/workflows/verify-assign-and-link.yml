@@ -21,7 +21,7 @@ permissions:
 jobs:
   validate-pr:
     name: Validate PR
-    if: github.event_name == 'pull_request_target' || github.event_name == 'issues'
+    if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
 
     steps:
