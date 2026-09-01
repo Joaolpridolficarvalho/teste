@@ -171,7 +171,6 @@ jobs:
           if [ -z "$ASSIGNEE" ]; then
            echo "Issue #$ISSUE_NUMBER has been unassigned."
 
-           # Find related PRs and add label
            PR_NUMBERS=$(gh pr list \
              --state open \
              --search "closes #$ISSUE_NUMBER" \
@@ -180,26 +179,28 @@ jobs:
 
            if [ -n "$PR_NUMBERS" ]; then
              while IFS= read -r PR_NUMBER; do
+               [ -z "$PR_NUMBER" ] && continue
                echo "Adding 'Needs Assignment' label to PR #$PR_NUMBER"
                gh pr edit "$PR_NUMBER" --add-label "Needs Assignment" || true
              done <<< "$PR_NUMBERS"
            fi
+
+           echo "Failing check because a linked PR is tied to an unassigned issue."
+           exit 1
           else
            echo "Issue #$ISSUE_NUMBER has been assigned to $ASSIGNEE."
 
-           # Find related PRs and remove label if the PR author matches
            PR_NUMBERS=$(gh pr list \
              --state open \
              --search "closes #$ISSUE_NUMBER" \
-             --json number,author \
-             --jq '.[]')
+             --json number \
+             --jq '.[].number')
 
            if [ -n "$PR_NUMBERS" ]; then
-             echo "$PR_NUMBERS" | jq -r 'if .author.login == "'"$ASSIGNEE"'" then "\(.number)" else empty end' | while IFS= read -r PR_NUMBER; do
-               if [ -n "$PR_NUMBER" ]; then
-                 echo "Removing 'Needs Assignment' label from PR #$PR_NUMBER"
-                 gh pr edit "$PR_NUMBER" --remove-label "Needs Assignment" 2>/dev/null || true
-               fi
-             done
+             while IFS= read -r PR_NUMBER; do
+               [ -z "$PR_NUMBER" ] && continue
+               echo "Removing 'Needs Assignment' label from PR #$PR_NUMBER"
+               gh pr edit "$PR_NUMBER" --remove-label "Needs Assignment" 2>/dev/null || true
+             done <<< "$PR_NUMBERS"
            fi
           fi

@@ -93,20 +93,11 @@ jobs:
                 --repo "$REPOSITORY" \
                 --add-label "Needs Assignment"
 
-              continue
+              echo "Failing check because the linked issue is unassigned."
+              exit 1
             fi
 
-            if [ "$ASSIGNEE" != "$PR_AUTHOR" ]; then
-              echo "Issue #$ISSUE_NUMBER is assigned to @$ASSIGNEE, not @$PR_AUTHOR."
-
-              gh pr edit "$PR_NUMBER" \
-                --repo "$REPOSITORY" \
-                --add-label "Needs Assignment"
-
-              continue
-            fi
-
-            echo "Issue #$ISSUE_NUMBER is correctly assigned to @$PR_AUTHOR."
+            echo "Issue #$ISSUE_NUMBER is assigned to @$ASSIGNEE."
 
             gh pr edit "$PR_NUMBER" \
               --repo "$REPOSITORY" \
