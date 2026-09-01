@@ -29,4 +29,4 @@ jobs:
           gh issue comment "$ISSUE_NUMBER" \
             --body "ok"
       - name: Call verify-assign-and-link workflow
-        uses: ./.github/workflows/verify-assign-and-link.yml
+        uses: ./.github/workflows/verify-assign-and-link.yml@main
