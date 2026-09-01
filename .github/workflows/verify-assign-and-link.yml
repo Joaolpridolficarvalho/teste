@@ -21,7 +21,7 @@ permissions:
 jobs:
   validate-pr:
     name: Validate PR
-    if: github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request_target' || github.event_name == 'issues'
     runs-on: ubuntu-latest
 
     steps:
@@ -145,7 +145,7 @@ jobs:
     name: Validate Issue Assignment
     
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'issues'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
