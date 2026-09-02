@@ -10,20 +10,39 @@ jobs:
               uses: actions/checkout@v4
             - name: Find workflow runs for the issue
               id: find_runs
-              uses: actions/github-script@v6
-              with:
-                  script: |
-                      const issueNumber = context.payload.issue.number;
-                      const workflowRuns = await github.rest.actions.listWorkflowRunsForRepo({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          event: 'issues',
-                          status: 'completed',
-                      });
-                      const runsForIssue = workflowRuns.data.workflow_runs.filter(run => {
-                          return run.head_branch === `issue-${issueNumber}`;
-                      });
-                      return runsForIssue.map(run => run.id);
+              env:
+                GH_TOKEN: ${{ github.token }}
+                ISSUE_NUMBER: ${{ github.event.issue.number }}
+                REPOSITORY: ${{ github.repository }}
+                WORKFLOW_ID: 337745628
+              run: |
+                set -euo pipefail
+
+                PR_NUMBER=$(gh api \
+                  "repos/$REPOSITORY/issues/$ISSUE_NUMBER/timeline" \
+                  --paginate \
+                  --jq ".[] | select(.event == \"cross-referenced\" and .source.issue.pull_request != null) | .source.issue.number" \
+                  | head -n 1)
+
+                if [ -z "$PR_NUMBER" ]; then
+                  echo "No pull request linked to issue #$ISSUE_NUMBER."
+                  exit 0
+                fi
+
+                RUN_ID=$(gh api \
+                  "repos/$REPOSITORY/actions/workflows/$WORKFLOW_ID/runs?event=pull_request_target&per_page=100" \
+                  --jq ".workflow_runs[] | select(any(.pull_requests[]?.number; . == $PR_NUMBER)) | .id" \
+                  | head -n 1)
+
+                if [ -z "$RUN_ID" ]; then
+                  echo "No Verify Assign and Link run found for PR #$PR_NUMBER."
+                  exit 1
+                fi
+
+                echo "Found run $RUN_ID for PR #$PR_NUMBER linked to issue #$ISSUE_NUMBER."
+                echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
             - name: Rerun workflow runs
-              run: gh run workflow run ${{ steps.find_runs.outputs.result }} --repo ${{ github.repository }} || true
+              env:
+                GH_TOKEN: ${{ github.token }}
+              run: gh run rerun ${{ steps.find_runs.outputs.run_id }} --repo ${{ github.repository }}
 
