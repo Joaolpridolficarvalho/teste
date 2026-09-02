@@ -205,3 +205,21 @@ jobs:
              done <<< "$PR_NUMBERS"
            fi
           fi
+      - name: Comment on PR if issue is assigned to issue author
+        run: |
+          if [ -n "$ASSIGNEE" ] && [ "$ASSIGNEE" == "$ISSUE_ASSIGNEE" ]; then
+            PR_NUMBERS=$(gh pr list \
+              --state open \
+              --search "closes #$ISSUE_NUMBER" \
+              --json number \
+              --jq '.[].number')
+
+          if [ -n "$PR_NUMBERS" ]; then
+            while IFS= read -r PR_NUMBER; do
+              [ -z "$PR_NUMBER" ] && continue
+              echo "Commenting on PR #$PR_NUMBER that issue is assigned to the author."
+              gh pr edit "$PR_NUMBER" --body "$(gh pr view "$PR_NUMBER" --json body -q .body)"$'\n' # Add a blank line to rerun the workflow
+            done <<< "$PR_NUMBERS"
+          fi
+          fi
+        
