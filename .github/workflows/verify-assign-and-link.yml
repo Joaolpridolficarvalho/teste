@@ -206,7 +206,15 @@ jobs:
            fi
           fi
       - name: Comment on PR if issue is assigned to issue author
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_ASSIGNEE: ${{ github.event.issue.assignee.login }}
         run: |
+          ASSIGNEE=$(gh issue view "$ISSUE_NUMBER" \
+            --json assignees \
+            --jq '.assignees[0].login // empty')
+
           if [ -n "$ASSIGNEE" ] && [ "$ASSIGNEE" == "$ISSUE_ASSIGNEE" ]; then
             PR_NUMBERS=$(gh pr list \
               --state open \
@@ -218,8 +226,8 @@ jobs:
             while IFS= read -r PR_NUMBER; do
               [ -z "$PR_NUMBER" ] && continue
               echo "Commenting on PR #$PR_NUMBER that issue is assigned to the author."
-              gh pr edit "$PR_NUMBER" --body "$(gh pr view "$PR_NUMBER" --json body -q .body)"$'\n' # Add a blank line to rerun the workflow
+              gh pr comment "$PR_NUMBER" --body $'The linked issue #'"$ISSUE_NUMBER"$' is now assigned to the author of this PR.\n\n'
             done <<< "$PR_NUMBERS"
           fi
           fi
-        
+
