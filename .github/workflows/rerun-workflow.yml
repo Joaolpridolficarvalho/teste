@@ -1,0 +1,29 @@
+name: Rerun Workflow
+on:
+    issues:
+        types: [assigned, unassigned]
+jobs:
+    rerun-workflow:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: Find workflow runs for the issue
+              id: find_runs
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      const issueNumber = context.payload.issue.number;
+                      const workflowRuns = await github.rest.actions.listWorkflowRunsForRepo({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          event: 'issues',
+                          status: 'completed',
+                      });
+                      const runsForIssue = workflowRuns.data.workflow_runs.filter(run => {
+                          return run.head_branch === `issue-${issueNumber}`;
+                      });
+                      return runsForIssue.map(run => run.id);
+            - name: Rerun workflow runs
+              run: gh run workflow run ${{ steps.find_runs.outputs.result }} --repo ${{ github.repository }} || true
+
