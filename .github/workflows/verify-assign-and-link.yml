@@ -2,6 +2,12 @@ name: Verify Assign and Link
 
 on:
   workflow_dispatch:
+    # Allow manual execution and cross-job re-triggering
+    inputs:
+      pr_number:
+        description: "PR Number to force validate"
+        required: false
+        type: string
   pull_request_target:
     types:
       - opened
@@ -18,11 +24,13 @@ permissions:
   contents: read
   issues: write
   pull-requests: write
+  actions: write # Required so the runner can trigger workflow_dispatch loops
 
 jobs:
   validate-pr:
     name: Validate PR
-    if: github.event_name == 'pull_request_target'
+    # Allow this job to run on PR events, manual execution, OR when dispatched by an issue event
+    if: github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -32,11 +40,17 @@ jobs:
       - name: Validate PR
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # Fallback to the manual input if triggered via workflow_dispatch
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           REPOSITORY: ${{ github.repository }}
         run: |
           set -e
+          
+          # If triggered manually/dispatched without a PR input context, find the author dynamically
+          if [ -z "$PR_AUTHOR" ]; then
+            PR_AUTHOR=$(gh pr view "$PR_NUMBER" --json author --jq '.author.login')
+          fi
 
           ISSUE_NUMBER=$(gh pr view "$PR_NUMBER" \
             --json closingIssuesReferences \
@@ -57,12 +71,12 @@ jobs:
               gh pr comment "$PR_NUMBER" --body "$COMMENT_MARKER
           🇧🇷 **Português**
           Esta PR não está vinculada a uma issue. Por favor, vincule a issue que esta PR pretende resolver antes de continuar. Siga o
-          [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/first-pull-request/#5-create-a-github-pr)
+          [Guia do Contribuidor](https://readthedocs.io)
           para aprender como vincular uma issue à sua PR. As PRs devem estar associadas a uma issue antes do início da implementação.
 
           🇬🇧 **English**
           This PR is not linked to an issue. Please link the issue this PR is intended to resolve before continuing. Please follow
-          the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/first-pull-request/#5-create-a-github-pr)
+          the [Contributor Guide](https://readthedocs.io)
           to learn how to link an issue to a PR. PRs should be associated with an issue before implementation starts."
             fi
 
@@ -93,13 +107,13 @@ jobs:
               gh pr comment "$PR_NUMBER" --body "$COMMENT_MARKER
           🇧🇷 **Português**
           Esta issue ainda não está atribuída a ninguém. Por favor, atribua a issue a você antes de abrir uma PR.
-          Siga o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
+          Siga o [Guia do Contribuidor](https://readthedocs.io)
           para aprender como reivindicar uma issue.
           Isso ajuda a evitar que várias pessoas trabalhem na mesma issue ao mesmo tempo.
 
           🇬🇧 **English**
           This issue is not assigned to anyone yet. Please assign the issue to yourself before opening a PR.
-          Please follow the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
+          Please follow the [Contributor Guide](https://readthedocs.io)
           to learn how to claim an issue.
           This helps us avoid multiple people working on the same issue at the same time."
             fi
@@ -123,14 +137,14 @@ jobs:
           🇧🇷 **Português**
           Esta issue está atualmente atribuída a outra pessoa. Por favor, coordene com o responsável antes de abrir uma PR para esta issue.
           Se você pretende trabalhar nela, certifique-se de que a issue esteja atribuída a você primeiro.
-          Veja o [Guia do Contribuidor](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
+          Veja o [Guia do Contribuidor](https://readthedocs.io)
           para mais informações.
 
           🇬🇧 **English**
           This issue is currently assigned to someone else.
           Please coordinate with the assignee before opening a PR for this issue.
           If you intend to work on it, please make sure the issue is assigned to you first.
-          See the [Contributor Guide](https://scanapi.readthedocs.io/en/latest/contributor-guide/?h=issue+ass#5-claim-the-issue)
+          See the [Contributor Guide](https://readthedocs.io)
           for more information."
             fi
 
@@ -144,90 +158,41 @@ jobs:
 
   validate-issue:
     name: Validate Issue Assignment
-    
     runs-on: ubuntu-latest
     if: github.event_name == 'issues'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Issue Assignment
+      - name: Dispatch Validation to Linked PRs
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_ASSIGNEE: ${{ github.event.issue.assignee.login }}
-          REPOSITORY: ${{ github.repository }}
         run: |
           set -e
 
           if [ -z "${ISSUE_NUMBER:-}" ]; then
-            echo "No issue number provided for this event; skipping issue validation."
+            echo "No issue number provided; skipping."
             exit 0
           fi
 
-          ASSIGNEE=$(gh issue view "$ISSUE_NUMBER" \
-           --json assignees \
-           --jq '.assignees[0].login // empty')
+          # Find all open PRs closing this issue
+          PR_DATA=$(gh pr list \
+            --state open \
+            --search "closes #$ISSUE_NUMBER" \
+            --json number,headRefName \
+            --jq '.[] | "\(.number),\(.headRefName)"')
 
-          if [ -z "$ASSIGNEE" ]; then
-           echo "Issue #$ISSUE_NUMBER has been unassigned."
-
-           PR_NUMBERS=$(gh pr list \
-             --state open \
-             --search "closes #$ISSUE_NUMBER" \
-             --json number \
-             --jq '.[].number')
-
-           if [ -n "$PR_NUMBERS" ]; then
-             while IFS= read -r PR_NUMBER; do
-               [ -z "$PR_NUMBER" ] && continue
-               echo "Adding 'Needs Assignment' label to PR #$PR_NUMBER"
-               gh pr edit "$PR_NUMBER" --add-label "Needs Assignment" || true
-             done <<< "$PR_NUMBERS"
-           fi
-
-           echo "Failing check because a linked PR is tied to an unassigned issue."
-           exit 1
-          else
-           echo "Issue #$ISSUE_NUMBER has been assigned to $ASSIGNEE."
-
-           PR_NUMBERS=$(gh pr list \
-             --state open \
-             --search "closes #$ISSUE_NUMBER" \
-             --json number \
-             --jq '.[].number')
-
-           if [ -n "$PR_NUMBERS" ]; then
-             while IFS= read -r PR_NUMBER; do
-               [ -z "$PR_NUMBER" ] && continue
-               echo "Removing 'Needs Assignment' label from PR #$PR_NUMBER"
-               gh pr edit "$PR_NUMBER" --remove-label "Needs Assignment" 2>/dev/null || true
-             done <<< "$PR_NUMBERS"
-           fi
-          fi
-      - name: Comment on PR if issue is assigned to issue author
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_ASSIGNEE: ${{ github.event.issue.assignee.login }}
-        run: |
-          ASSIGNEE=$(gh issue view "$ISSUE_NUMBER" \
-            --json assignees \
-            --jq '.assignees[0].login // empty')
-
-          if [ -n "$ASSIGNEE" ] && [ "$ASSIGNEE" == "$ISSUE_ASSIGNEE" ]; then
-            PR_NUMBERS=$(gh pr list \
-              --state open \
-              --search "closes #$ISSUE_NUMBER" \
-              --json number \
-              --jq '.[].number')
-
-          if [ -n "$PR_NUMBERS" ]; then
-            while IFS= read -r PR_NUMBER; do
+          if [ -n "$PR_DATA" ]; then
+            while IFS=',' read -r PR_NUMBER HEAD_REF; do
               [ -z "$PR_NUMBER" ] && continue
-              echo "Commenting on PR #$PR_NUMBER that issue is assigned to the author."
-              gh pr comment "$PR_NUMBER" --body $'The linked issue #'"$ISSUE_NUMBER"$' is now assigned to the author of this PR.\n\n'
-            done <<< "$PR_NUMBERS"
+              echo "Re-triggering validation check for PR #$PR_NUMBER (Branch: $HEAD_REF)..."
+              
+              # Programmatically trigger workflow_dispatch targeting the PR's specific branch
+              gh workflow run "Verify Assign and Link" \
+                --ref "$HEAD_REF" \
+                -f pr_number="$PR_NUMBER"
+            done <<< "$PR_DATA"
+          else
+            echo "No open PRs found connected to Issue #$ISSUE_NUMBER."
           fi
-          fi
-
