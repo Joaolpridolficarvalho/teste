@@ -21,8 +21,8 @@ jobs:
                 PR_NUMBER=$(gh api \
                   "repos/$REPOSITORY/issues/$ISSUE_NUMBER/timeline" \
                   --paginate \
-                  --slurp \
-                  --jq 'first(.[][] | select(.event == "cross-referenced" and .source.issue.pull_request != null) | .source.issue.number) // empty')
+                  --jq '.[] | select(.event == "cross-referenced" and .source.issue.pull_request != null) | .source.issue.number')
+                PR_NUMBER="${PR_NUMBER%%$'\n'*}"
 
                 if [ -z "$PR_NUMBER" ]; then
                   echo "No pull request linked to issue #$ISSUE_NUMBER."
