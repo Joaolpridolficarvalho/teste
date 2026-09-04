@@ -21,8 +21,8 @@ jobs:
                 PR_NUMBER=$(gh api \
                   "repos/$REPOSITORY/issues/$ISSUE_NUMBER/timeline" \
                   --paginate \
-                  --jq ".[] | select(.event == \"cross-referenced\" and .source.issue.pull_request != null) | .source.issue.number" \
-                  | head -n 1)
+                  --slurp \
+                  --jq 'first(.[][] | select(.event == "cross-referenced" and .source.issue.pull_request != null) | .source.issue.number) // empty')
 
                 if [ -z "$PR_NUMBER" ]; then
                   echo "No pull request linked to issue #$ISSUE_NUMBER."
@@ -31,8 +31,7 @@ jobs:
 
                 RUN_ID=$(gh api \
                   "repos/$REPOSITORY/actions/workflows/$WORKFLOW_ID/runs?event=pull_request_target&per_page=100" \
-                  --jq ".workflow_runs[] | select(any(.pull_requests[]?.number; . == $PR_NUMBER)) | .id" \
-                  | head -n 1)
+                  --jq "first(.workflow_runs[] | select(any(.pull_requests[]?.number; . == $PR_NUMBER)) | .id) // empty")
 
                 if [ -z "$RUN_ID" ]; then
                   echo "No Verify Assign and Link run found for PR #$PR_NUMBER."
