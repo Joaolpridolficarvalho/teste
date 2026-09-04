@@ -2,6 +2,12 @@ name: Rerun Workflow
 on:
     issues:
         types: [assigned, unassigned]
+
+permissions:
+  contents: read
+  issues: read
+  actions: write
+
 jobs:
     rerun-workflow:
         runs-on: ubuntu-latest
