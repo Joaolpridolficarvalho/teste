@@ -29,18 +29,16 @@ permissions:
 jobs:
   validate-pr:
     name: Validate PR
-    # Allow this job to run on PR events, manual execution, OR when dispatched by an issue event
     if: github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Validate PR
         env:
           GH_TOKEN: ${{ github.token }}
-          # Fallback to the manual input if triggered via workflow_dispatch
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           REPOSITORY: ${{ github.repository }}
@@ -156,43 +154,3 @@ jobs:
           gh pr edit "$PR_NUMBER" \
             --remove-label "Needs Assignment" 2>/dev/null || true
 
-  validate-issue:
-    name: Validate Issue Assignment
-    runs-on: ubuntu-latest
-    if: github.event_name == 'issues'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Dispatch Validation to Linked PRs
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          set -e
-
-          if [ -z "${ISSUE_NUMBER:-}" ]; then
-            echo "No issue number provided; skipping."
-            exit 0
-          fi
-
-          # Find all open PRs closing this issue
-          PR_DATA=$(gh pr list \
-            --state open \
-            --search "closes #$ISSUE_NUMBER" \
-            --json number,headRefName \
-            --jq '.[] | "\(.number),\(.headRefName)"')
-
-          if [ -n "$PR_DATA" ]; then
-            while IFS=',' read -r PR_NUMBER HEAD_REF; do
-              [ -z "$PR_NUMBER" ] && continue
-              echo "Re-triggering validation check for PR #$PR_NUMBER (Branch: $HEAD_REF)..."
-              
-              # Programmatically trigger workflow_dispatch targeting the PR's specific branch
-              gh workflow run "Verify Assign and Link" \
-                --ref "$HEAD_REF" \
-                -f pr_number="$PR_NUMBER"
-            done <<< "$PR_DATA"
-          else
-            echo "No open PRs found connected to Issue #$ISSUE_NUMBER."
-          fi
