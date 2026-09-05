@@ -43,7 +43,7 @@ jobs:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           REPOSITORY: ${{ github.repository }}
         run: |
-          set -e
+          set -euo pipefail
           
           # If triggered manually/dispatched without a PR input context, find the author dynamically
           if [ -z "$PR_AUTHOR" ]; then
@@ -53,6 +53,43 @@ jobs:
           ISSUE_NUMBER=$(gh pr view "$PR_NUMBER" \
             --json closingIssuesReferences \
             --jq '.closingIssuesReferences[0].number // empty')
+
+          cleanup_old_issue() {
+            local old_issue_number="$1"
+
+            if [ "$old_issue_number" = "$ISSUE_NUMBER" ]; then
+              return
+            fi
+
+            echo "Cleaning validation state from old issue #$old_issue_number."
+
+            gh issue edit "$old_issue_number" \
+              --remove-label "Needs Assignment" 2>/dev/null || true
+            gh issue edit "$old_issue_number" \
+              --remove-label "Needs Issue" 2>/dev/null || true
+
+            gh api \
+              "repos/$REPOSITORY/issues/$old_issue_number/comments?per_page=100" \
+              --paginate \
+              --jq '.[] | select(.body | contains("<!-- verify-assign-and-link:")) | .id' \
+              | while read -r comment_id; do
+                  gh api --method DELETE \
+                    "repos/$REPOSITORY/issues/comments/$comment_id"
+                done
+          }
+
+          if [ "${GITHUB_EVENT_NAME:-}" = "pull_request_target" ] \
+            && [ "${GITHUB_EVENT_ACTION:-}" = "edited" ]; then
+            OLD_ISSUE_NUMBERS=$(gh api \
+              "repos/$REPOSITORY/issues/$PR_NUMBER/timeline" \
+              --paginate \
+              --jq '.[] | select(.event == "cross-referenced" and .source.issue.number != null) | .source.issue.number' \
+              | sort -u)
+
+            while read -r old_issue_number; do
+              [ -n "$old_issue_number" ] && cleanup_old_issue "$old_issue_number"
+            done <<< "$OLD_ISSUE_NUMBERS"
+          fi
 
           if [ -z "$ISSUE_NUMBER" ]; then
             echo "PR #$PR_NUMBER is not linked to an issue."
@@ -97,6 +134,25 @@ jobs:
 
             COMMENT_MARKER="<!-- verify-assign-and-link:Needs Assignment:unassigned -->"
 
+            if ! gh issue view "$ISSUE_NUMBER" \
+              --json comments \
+              --jq '.comments[].body' \
+              | grep -Fq "$COMMENT_MARKER"; then
+
+              gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_MARKER
+          🇧🇷 **Português**
+          Esta issue ainda não está atribuída a ninguém. Por favor, atribua a issue a você antes de abrir uma PR.
+          Siga o [Guia do Contribuidor](https://readthedocs.io)
+          para aprender como reivindicar uma issue.
+          Isso ajuda a evitar que várias pessoas trabalhem na mesma issue ao mesmo tempo.
+
+          🇬🇧 **English**
+          This issue is not assigned to anyone yet. Please assign the issue to yourself before opening a PR.
+          Please follow the [Contributor Guide](https://readthedocs.io)
+          to learn how to claim an issue.
+          This helps us avoid multiple people working on the same issue at the same time."
+            fi
+
             if ! gh pr view "$PR_NUMBER" \
               --json comments \
               --jq '.comments[].body' \
@@ -125,6 +181,26 @@ jobs:
             gh pr edit "$PR_NUMBER" --add-label "Needs Assignment"
 
             COMMENT_MARKER="<!-- verify-assign-and-link:Needs Assignment:other -->"
+
+            if ! gh issue view "$ISSUE_NUMBER" \
+              --json comments \
+              --jq '.comments[].body' \
+              | grep -Fq "$COMMENT_MARKER"; then
+
+              gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_MARKER
+          🇧🇷 **Português**
+          Esta issue está atualmente atribuída a outra pessoa. Por favor, coordene com o responsável antes de abrir uma PR para esta issue.
+          Se você pretende trabalhar nela, certifique-se de que a issue esteja atribuída a você primeiro.
+          Veja o [Guia do Contribuidor](https://readthedocs.io)
+          para mais informações.
+
+          🇬🇧 **English**
+          This issue is currently assigned to someone else.
+          Please coordinate with the assignee before opening a PR for this issue.
+          If you intend to work on it, please make sure the issue is assigned to you first.
+          See the [Contributor Guide](https://readthedocs.io)
+          for more information."
+            fi
 
             if ! gh pr view "$PR_NUMBER" \
               --json comments \
