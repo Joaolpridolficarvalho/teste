@@ -20,7 +20,7 @@ jobs:
                 GH_TOKEN: ${{ github.token }}
                 ISSUE_NUMBER: ${{ github.event.issue.number }}
                 REPOSITORY: ${{ github.repository }}
-                WORKFLOW_ID: 337745628
+                WORKFLOW_NAME: Verify Assign and Link
               run: |
                 set -euo pipefail
 
@@ -33,6 +33,15 @@ jobs:
                 if [ -z "$PR_NUMBER" ]; then
                   echo "No pull request linked to issue #$ISSUE_NUMBER."
                   exit 0
+                fi
+
+                WORKFLOW_ID=$(gh api \
+                  "repos/$REPOSITORY/actions/workflows?per_page=100" \
+                  --jq ".workflows[] | select(.name == \"$WORKFLOW_NAME\") | .id" | head -n 1)
+
+                if [ -z "$WORKFLOW_ID" ]; then
+                  echo "Workflow '$WORKFLOW_NAME' not found."
+                  exit 1
                 fi
 
                 RUN_ID=$(gh api \
