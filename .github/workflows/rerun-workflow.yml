@@ -2,19 +2,25 @@ name: Rerun Workflow
 on:
     issues:
         types: [assigned, unassigned]
+
+permissions:
+  contents: read
+  issues: read
+  actions: write
+
 jobs:
     rerun-workflow:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
             - name: Find workflow runs for the issue
               id: find_runs
               env:
                 GH_TOKEN: ${{ github.token }}
                 ISSUE_NUMBER: ${{ github.event.issue.number }}
                 REPOSITORY: ${{ github.repository }}
-                WORKFLOW_ID: 337745628
+                WORKFLOW_NAME: Verify Assign and Link
               run: |
                 set -euo pipefail
 
@@ -27,6 +33,15 @@ jobs:
                 if [ -z "$PR_NUMBER" ]; then
                   echo "No pull request linked to issue #$ISSUE_NUMBER."
                   exit 0
+                fi
+
+                WORKFLOW_ID=$(gh api \
+                  "repos/$REPOSITORY/actions/workflows?per_page=100" \
+                  --jq ".workflows[] | select(.name == \"$WORKFLOW_NAME\") | .id" | head -n 1)
+
+                if [ -z "$WORKFLOW_ID" ]; then
+                  echo "Workflow '$WORKFLOW_NAME' not found."
+                  exit 1
                 fi
 
                 RUN_ID=$(gh api \
