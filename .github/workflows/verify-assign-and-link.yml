@@ -106,13 +106,11 @@ jobs:
               gh pr comment "$PR_NUMBER" --body "$COMMENT_MARKER
           🇧🇷 **Português**
           Esta PR não está vinculada a uma issue. Por favor, vincule a issue que esta PR pretende resolver antes de continuar. Siga o
-          [Guia do Contribuidor](https://readthedocs.io)
-          para aprender como vincular uma issue à sua PR. As PRs devem estar associadas a uma issue antes do início da implementação.
+          [Guia do Contribuidor](https://readthedocs.io) para aprender como vincular uma issue à sua PR. As PRs devem estar associadas a uma issue antes do início da implementação.
 
           🇬🇧 **English**
           This PR is not linked to an issue. Please link the issue this PR is intended to resolve before continuing. Please follow
-          the [Contributor Guide](https://readthedocs.io)
-          to learn how to link an issue to a PR. PRs should be associated with an issue before implementation starts."
+          the [Contributor Guide](https://readthedocs.io) to learn how to link an issue to a PR. PRs should be associated with an issue before implementation starts."
             fi
 
             exit 1
@@ -142,14 +140,12 @@ jobs:
               gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_MARKER
           🇧🇷 **Português**
           Esta issue ainda não está atribuída a ninguém. Por favor, atribua a issue a você antes de abrir uma PR.
-          Siga o [Guia do Contribuidor](https://readthedocs.io)
-          para aprender como reivindicar uma issue.
+          Siga o [Guia do Contribuidor](https://readthedocs.io) para aprender como reivindicar uma issue.
           Isso ajuda a evitar que várias pessoas trabalhem na mesma issue ao mesmo tempo.
 
           🇬🇧 **English**
           This issue is not assigned to anyone yet. Please assign the issue to yourself before opening a PR.
-          Please follow the [Contributor Guide](https://readthedocs.io)
-          to learn how to claim an issue.
+          Please follow the [Contributor Guide](https://readthedocs.io) to learn how to claim an issue.
           This helps us avoid multiple people working on the same issue at the same time."
             fi
 
